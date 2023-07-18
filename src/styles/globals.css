@@ -16,12 +16,113 @@
   }
 }
 
+@font-face {
+  font-family: "Die Nasty";
+  src: url("../../public/fonts/die-nasty.regular.otf");
+}
+
+@font-face {
+  font-family: "Rubik";
+  src: url("../../public/fonts/Rubik.ttf");
+}
+
 body {
-  color: rgb(var(--foreground-rgb));
+  background-color: #080808;
+}
+
+body {
+  margin: 0;
+  padding: 0;
+}
+
+
+.bg {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: auto;
+  min-height: 100vh;
+}
+
+/* Background 1 */
+.bg1 {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: auto;
+  min-height: 100vh;
+  background-size: cover;
+  background-repeat: no-repeat;
+  background-position: center center;
+  background-image: url("../../assets/images/img1.png");
+  background-size: 50%;
+  background-position: 90% 90%;
+}
+
+.bg1::after {
+  content: "";
+  width: 20rem;
+  height: 9rem;
   background: linear-gradient(
-      to bottom,
-      transparent,
-      rgb(var(--background-end-rgb))
-    )
-    rgb(var(--background-start-rgb));
+    91.26deg,
+    rgb(209, 75, 75) 5%,
+    rgb(132, 47, 47) 70%
+  );
+  filter: blur(100px);
+  transform: matrix(-0.08, -0.99, 1, 0.05, 0, 0);
+  position: absolute;
+  left: 20%; /* Set the initial position */
+  top: 45%; /* Set the initial position */
+  transform: translate(-50%, -50%); /* Center the div */
+}
+
+.bg1::before {
+  content: "";
+  width: 20rem;
+  height: 9rem;
+  background: radial-gradient(
+    circle,
+    rgb(132, 47, 47) 70%,
+    rgb(209, 75, 75) 5%
+  );
+  filter: blur(100px);
+  transform: matrix(-0.08, -0.99, 1, 0.05, 0, 0);
+  position: absolute;
+  left: 70%; /* Set the initial position */
+  top: 60%; /* Set the initial position */
+  transform: translate(-50%, -50%); /* Center the div */
+}
+
+/* Background 2 */
+.bg2 {
+  background-image: url("../../assets/images/backgroundImage1.png");
+}
+
+/* Background 3 */
+.bg3 {
+  background-image: url("../../assets/images/backgroundImage1.png");
+}
+
+
+/* Style for the custom scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+  background-color: transparent; /* Set the background color of the scrollbar track */
+}
+
+::-webkit-scrollbar-thumb {
+  margin-left: 1rem;
+  margin-right: 1rem;
+  background-color: #c20027; /* Set the color of the scrollbar thumb (the moving part) */
+  border-radius: 12px; /* Add soft edges to the scrollbar thumb */
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background-color: #8a0000; /* Change the color on hover if desired */
+}
+
+.profile{
+  background: linear-gradient(45deg, #ff0000, #00ff00);
 }
