@@ -35,7 +35,6 @@ body {
   padding: 0;
 }
 
-
 .bg {
   position: absolute;
   top: 0;
@@ -105,7 +104,6 @@ body {
   background-image: url("../../assets/images/backgroundImage1.png");
 }
 
-
 /* Style for the custom scrollbar */
 ::-webkit-scrollbar {
   width: 8px;
@@ -123,6 +121,11 @@ body {
   background-color: #8a0000; /* Change the color on hover if desired */
 }
 
-.profile{
+.profile {
   background: linear-gradient(45deg, #ff0000, #00ff00);
 }
+
+.border-shadow {
+  box-shadow: 0 0 30px 3px rgb(62, 16, 10, 0.5); /* Adjust the shadow color and spread as needed */
+}
+

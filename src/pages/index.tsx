@@ -1,8 +1,11 @@
-import { ConnectButton } from "@rainbow-me/rainbowkit";
+import React, { useState, useEffect } from "react";
 import LandingPage from "./landingPage";
+import ClientOnly from "./clientOnly";
 
 export default function Home() {
   return (
-    <LandingPage></LandingPage>
+    <ClientOnly>
+      <LandingPage></LandingPage>
+    </ClientOnly>
   );
 }

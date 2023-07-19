@@ -6,6 +6,13 @@ import XstreamTextLogo from "../../assets/logos/XstreamTextLogo.png";
 import ProfilePicture from "../../assets/images/profilePicture.jpg";
 import { ConnectButton } from "@rainbow-me/rainbowkit";
 import DropDownMenu from "./DropDownMenu";
+import {
+  useAccount,
+  useConnect,
+  useDisconnect,
+  useEnsAvatar,
+  useEnsName,
+} from "wagmi";
 
 interface NavbarProps {
   isSticky: boolean;
@@ -17,7 +24,7 @@ const Navbar: React.FC<NavbarProps> = ({ isSticky }) => {
 
   return (
     <div
-      className={`h-[15vh] bg-[#1f1f1f] border-b-2 border-[#3a3a3a] w-full flex flex-row justify-between items-center py-2 px-4 ${
+      className={`h-[15vh] z-50 bg-[#1f1f1f] border-b-2 border-[#3a3a3a] w-full flex flex-row justify-between items-center py-2 px-4 ${
         isSticky ? "fixed top-0" : ""
       }`}
     >
@@ -61,9 +68,7 @@ const Navbar: React.FC<NavbarProps> = ({ isSticky }) => {
           <span className="text-textRed font-rubik font-bold ml-3">
             Xstream
           </span>
-          {dropDownMenu && (
-            <DropDownMenu></DropDownMenu>
-          )}
+          {dropDownMenu && <DropDownMenu></DropDownMenu>}
         </div>
       </div>
     </div>

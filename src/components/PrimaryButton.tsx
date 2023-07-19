@@ -19,7 +19,11 @@ const PrimaryButton: React.FC<ButtonProps> = ({
 }) => {
   return (
     <div
-      className={`${h} ${w} flex flex-row justify-center items-center ${textSize} text-white font-rubik font-extrabold transition delay-75 rounded-[2px] ${disabled ? "border-[1.5px] border-solid border-primaryGrey bg-secondaryGrey" : "border-[1.5px] border-solid border-secondaryRed bg-primaryRed cursor-pointer hover:bg-secondaryRed"}`}
+      className={`${h} ${w} flex flex-row justify-center items-center ${textSize} text-white font-rubik font-extrabold transition delay-75 rounded-[2px] ${
+        disabled
+          ? "border-[1.5px] border-solid border-secondaryGrey bg-primaryGrey"
+          : "border-[1.5px] border-solid border-secondaryRed bg-primaryRed cursor-pointer hover:bg-secondaryRed"
+      }`}
       onClick={!disabled ? action : () => {}}
     >
       {label}

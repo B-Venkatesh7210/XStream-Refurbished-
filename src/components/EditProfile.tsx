@@ -51,15 +51,15 @@ const EditProfile = () => {
   };
 
   const handleAllCheck = () => {
-    let status = false;
+    let status = true;
     if (
       formData.name != "" &&
       formData.name != "Enter Your Name" &&
       formData.desp != ""
     ) {
-      status = true;
+      status = false;
     }
-    return !status;
+    return status;
   };
 
   return (
@@ -137,7 +137,7 @@ const EditProfile = () => {
             <textarea
               id="desp"
               value={formData.desp}
-              className="appearance-none bg-transparent border-none outline-none text-white text-[1rem] py-2 w-full h-full font-rubik"
+              className="appearance-none bg-transparent border-none outline-none text-white text-[1rem] py-2 w-full h-full font-rubik resize-none"
               onChange={handleDespChange}
               onClick={handleDespClick}
             />
@@ -148,7 +148,7 @@ const EditProfile = () => {
             h="h-[3.5rem]"
             w="w-[12rem]"
             textSize="text-[1.2rem]"
-            label="CREATE USER"
+            label={"CREATE USER"}
             action={() => {
               console.log("Clicked");
             }}
