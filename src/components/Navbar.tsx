@@ -1,9 +1,10 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useRouter } from "next/router";
 import Image from "next/image";
 import XstreamLogo from "../../assets/logos/XstreamLogo.png";
 import XstreamTextLogo from "../../assets/logos/XstreamTextLogo.png";
 import ProfilePicture from "../../assets/images/profilePicture.jpg";
+import Account from "../../assets/images/account.png";
 import { ConnectButton } from "@rainbow-me/rainbowkit";
 import DropDownMenu from "./DropDownMenu";
 import {
@@ -13,6 +14,8 @@ import {
   useEnsAvatar,
   useEnsName,
 } from "wagmi";
+import { useSignerContext } from "@/contexts/signerContext";
+import { getEllipsisTxt } from "@/utils/formatters";
 
 interface NavbarProps {
   isSticky: boolean;
@@ -21,15 +24,29 @@ interface NavbarProps {
 const Navbar: React.FC<NavbarProps> = ({ isSticky }) => {
   const [dropDownMenu, setDropDownMenu] = useState<boolean>(false);
   const router = useRouter();
+  const {
+    isUser,
+    isStreamer,
+    userData,
+    streamerData,
+    streamerBalance,
+    signer,
+  } = useSignerContext();
+  const { isDisconnected, address } = useAccount();
+
+  let ellipAddress
+  if(signer){
+    ellipAddress = getEllipsisTxt(address,4)
+  }
 
   return (
     <div
-      className={`h-[15vh] z-50 bg-[#1f1f1f] border-b-2 border-[#3a3a3a] w-full flex flex-row justify-between items-center py-2 px-4 ${
+      className={`h-[10vh] z-50 bg-[#1f1f1f] border-b-2 border-[#3a3a3a] w-full flex flex-row justify-between items-center py-2 px-4 ${
         isSticky ? "fixed top-0" : ""
       }`}
     >
       <div className="flex flex-row justify-start items-center">
-        <Image
+        {/* <Image
           alt="Xstream Logo"
           src={XstreamLogo}
           width={80}
@@ -37,12 +54,12 @@ const Navbar: React.FC<NavbarProps> = ({ isSticky }) => {
           onClick={() => {
             router.push("/");
           }}
-        ></Image>
+        ></Image> */}
         <div className="ml-4">
           <Image
             alt="Xstream Text Logo"
             src={XstreamTextLogo}
-            width={250}
+            width={200}
             className="cursor-pointer"
             onClick={() => {
               router.push("/");
@@ -52,24 +69,40 @@ const Navbar: React.FC<NavbarProps> = ({ isSticky }) => {
       </div>
       <div className="flex flex-row justify-start items-center">
         <ConnectButton></ConnectButton>
-        <div
-          className="relative h-[3rem] w-auto min-w-[8rem] bg-primaryGrey rounded-sm flex flex-row justify-start items-center py-2 px-4 ml-4 cursor-pointer hover:bg-secondaryGrey"
-          onClick={() => {
-            setDropDownMenu(!dropDownMenu);
-          }}
-        >
-          <div className="rounded-[50%] w-[2rem] h-[2rem] overflow-hidden">
-            <Image
-              alt="Profile Picture"
-              src={ProfilePicture}
-              objectFit="cover"
-            ></Image>
+        {!isDisconnected && (
+          <div
+            className="relative h-[2.5rem] w-auto min-w-[8rem] bg-primaryGrey rounded-sm flex flex-row justify-start items-center py-2 px-4 ml-4 cursor-pointer hover:bg-secondaryGrey"
+            onClick={() => {
+              setDropDownMenu(!dropDownMenu);
+            }}
+          >
+            <div className="rounded-[50%] w-[1.5rem] h-[1.5rem] overflow-hidden bg-white/70">
+              <Image
+                alt="Profile Picture"
+                //TODO add streamerData.profilePicture condition
+                //@ts-ignore
+                src={
+                  isUser
+                    ? `https://ipfs.io/ipfs/${userData?.profilePicture}`
+                    : isStreamer
+                    ? `https://ipfs.io/ipfs/QmRRPWG96cmgTn2qSzjwr2qvfNEuhunv6FNeMFGa9bx6mQ`
+                    : Account
+                }
+                objectFit="cover"
+                width={200}
+                height={200}
+              ></Image>
+            </div>
+            <span className="text-textRed text-[1rem] font-rubik font-bold ml-3">
+              {isUser
+                ? userData?.name
+                : isStreamer
+                ? streamerData?.name
+                : ellipAddress}
+            </span>
+            {dropDownMenu && <DropDownMenu></DropDownMenu>}
           </div>
-          <span className="text-textRed font-rubik font-bold ml-3">
-            Xstream
-          </span>
-          {dropDownMenu && <DropDownMenu></DropDownMenu>}
-        </div>
+        )}
       </div>
     </div>
   );

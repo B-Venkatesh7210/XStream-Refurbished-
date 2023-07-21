@@ -1,64 +1,8 @@
-import { IContractConfig } from "../utils/types"
+import { IContractConfig } from "../utils/types";
 
 const contractConfig: IContractConfig = {
-  address: "0x4a3810F0678f6DBDa5167DE8267e600EbbE3FdDC",
+  address: "0x02a169C3A1cE62dBBedc4D2CF970F2b02f1508Fd",
   abi: [
-    {
-      inputs: [
-        {
-          internalType: "uint256",
-          name: "_streamId",
-          type: "uint256",
-        },
-        {
-          internalType: "string",
-          name: "_message",
-          type: "string",
-        },
-        {
-          internalType: "bool",
-          name: "_isSubscriber",
-          type: "bool",
-        },
-      ],
-      name: "chat",
-      outputs: [],
-      stateMutability: "payable",
-      type: "function",
-    },
-    {
-      inputs: [
-        {
-          internalType: "string",
-          name: "_name",
-          type: "string",
-        },
-        {
-          internalType: "string",
-          name: "_desp",
-          type: "string",
-        },
-        {
-          internalType: "string",
-          name: "_metadata",
-          type: "string",
-        },
-        {
-          internalType: "string",
-          name: "_nftImage",
-          type: "string",
-        },
-        {
-          internalType: "uint256",
-          name: "_totalNfts",
-          type: "uint256",
-        },
-      ],
-      name: "createStreamer",
-      outputs: [],
-      stateMutability: "nonpayable",
-      type: "function",
-    },
     {
       inputs: [
         {
@@ -100,72 +44,6 @@ const contractConfig: IContractConfig = {
       ],
       name: "ChatReceived",
       type: "event",
-    },
-    {
-      inputs: [],
-      name: "extractBalance",
-      outputs: [],
-      stateMutability: "payable",
-      type: "function",
-    },
-    {
-      inputs: [
-        {
-          internalType: "address",
-          name: "_streamer",
-          type: "address",
-        },
-      ],
-      name: "mintNft",
-      outputs: [],
-      stateMutability: "nonpayable",
-      type: "function",
-    },
-    {
-      inputs: [
-        {
-          internalType: "string",
-          name: "_title",
-          type: "string",
-        },
-        {
-          internalType: "string",
-          name: "_thumbnail",
-          type: "string",
-        },
-        {
-          internalType: "string",
-          name: "_desp",
-          type: "string",
-        },
-        {
-          internalType: "string",
-          name: "_roomId",
-          type: "string",
-        },
-        {
-          internalType: "bool",
-          name: "_exclusive",
-          type: "bool",
-        },
-      ],
-      name: "startStream",
-      outputs: [],
-      stateMutability: "nonpayable",
-      type: "function",
-    },
-    {
-      inputs: [
-        {
-          internalType: "uint256",
-          name: "_streamId",
-          type: "uint256",
-        },
-      ],
-      name: "stopStream",
-      outputs: [],
-      stateMutability: "nonpayable",
-      type: "function",
     },
     {
       anonymous: false,
@@ -247,8 +125,18 @@ const contractConfig: IContractConfig = {
           type: "string",
         },
         {
+          internalType: "string",
+          name: "profilePicture",
+          type: "string",
+        },
+        {
           internalType: "uint256",
           name: "totalNfts",
+          type: "uint256",
+        },
+        {
+          internalType: "uint256",
+          name: "subscribers",
           type: "uint256",
         },
         {
@@ -258,6 +146,164 @@ const contractConfig: IContractConfig = {
         },
       ],
       stateMutability: "view",
+      type: "function",
+    },
+    {
+      inputs: [
+        {
+          internalType: "address",
+          name: "",
+          type: "address",
+        },
+      ],
+      name: "addToUser",
+      outputs: [
+        {
+          internalType: "uint256",
+          name: "userId",
+          type: "uint256",
+        },
+        {
+          internalType: "address payable",
+          name: "userAdd",
+          type: "address",
+        },
+        {
+          internalType: "string",
+          name: "name",
+          type: "string",
+        },
+        {
+          internalType: "string",
+          name: "desp",
+          type: "string",
+        },
+        {
+          internalType: "string",
+          name: "profilePicture",
+          type: "string",
+        },
+      ],
+      stateMutability: "view",
+      type: "function",
+    },
+    {
+      inputs: [
+        {
+          internalType: "uint256",
+          name: "_streamId",
+          type: "uint256",
+        },
+        {
+          internalType: "string",
+          name: "_message",
+          type: "string",
+        },
+        {
+          internalType: "bool",
+          name: "_isSubscriber",
+          type: "bool",
+        },
+      ],
+      name: "chat",
+      outputs: [],
+      stateMutability: "payable",
+      type: "function",
+    },
+    {
+      inputs: [
+        {
+          internalType: "string",
+          name: "_name",
+          type: "string",
+        },
+        {
+          internalType: "string",
+          name: "_desp",
+          type: "string",
+        },
+        {
+          internalType: "string",
+          name: "_metadata",
+          type: "string",
+        },
+        {
+          internalType: "string",
+          name: "_nftImage",
+          type: "string",
+        },
+        {
+          internalType: "string",
+          name: "_profilePicture",
+          type: "string",
+        },
+        {
+          internalType: "uint256",
+          name: "_totalNfts",
+          type: "uint256",
+        },
+        {
+          internalType: "string[]",
+          name: "_categories",
+          type: "string[]",
+        },
+      ],
+      name: "createStreamer",
+      outputs: [],
+      stateMutability: "nonpayable",
+      type: "function",
+    },
+    {
+      inputs: [
+        {
+          internalType: "string",
+          name: "_name",
+          type: "string",
+        },
+        {
+          internalType: "string",
+          name: "_desp",
+          type: "string",
+        },
+        {
+          internalType: "string",
+          name: "_profilePicture",
+          type: "string",
+        },
+      ],
+      name: "createUser",
+      outputs: [],
+      stateMutability: "nonpayable",
+      type: "function",
+    },
+    {
+      inputs: [
+        {
+          internalType: "string",
+          name: "_name",
+          type: "string",
+        },
+        {
+          internalType: "string",
+          name: "_desp",
+          type: "string",
+        },
+        {
+          internalType: "string",
+          name: "_profilePicture",
+          type: "string",
+        },
+      ],
+      name: "editUser",
+      outputs: [],
+      stateMutability: "nonpayable",
+      type: "function",
+    },
+    {
+      inputs: [],
+      name: "extractBalance",
+      outputs: [],
+      stateMutability: "payable",
       type: "function",
     },
     {
@@ -346,6 +392,16 @@ const contractConfig: IContractConfig = {
               internalType: "bool",
               name: "exclusive",
               type: "bool",
+            },
+            {
+              internalType: "string[]",
+              name: "categories",
+              type: "string[]",
+            },
+            {
+              internalType: "string",
+              name: "hashtags",
+              type: "string",
             },
             {
               internalType: "bool",
@@ -456,6 +512,11 @@ const contractConfig: IContractConfig = {
           type: "bool",
         },
         {
+          internalType: "string",
+          name: "hashtags",
+          type: "string",
+        },
+        {
           internalType: "bool",
           name: "isLive",
           type: "bool",
@@ -478,6 +539,25 @@ const contractConfig: IContractConfig = {
         },
       ],
       name: "isStreamer",
+      outputs: [
+        {
+          internalType: "bool",
+          name: "",
+          type: "bool",
+        },
+      ],
+      stateMutability: "view",
+      type: "function",
+    },
+    {
+      inputs: [
+        {
+          internalType: "address",
+          name: "",
+          type: "address",
+        },
+      ],
+      name: "isUser",
       outputs: [
         {
           internalType: "bool",
@@ -558,6 +638,11 @@ const contractConfig: IContractConfig = {
           type: "bool",
         },
         {
+          internalType: "string",
+          name: "hashtags",
+          type: "string",
+        },
+        {
           internalType: "bool",
           name: "isLive",
           type: "bool",
@@ -572,6 +657,19 @@ const contractConfig: IContractConfig = {
       type: "function",
     },
     {
+      inputs: [
+        {
+          internalType: "address",
+          name: "_streamer",
+          type: "address",
+        },
+      ],
+      name: "mintNft",
+      outputs: [],
+      stateMutability: "nonpayable",
+      type: "function",
+    },
+    {
       inputs: [],
       name: "nftContract",
       outputs: [
@@ -579,6 +677,93 @@ const contractConfig: IContractConfig = {
           internalType: "contract XstreamNFT",
           name: "",
           type: "address",
+        },
+      ],
+      stateMutability: "view",
+      type: "function",
+    },
+    {
+      inputs: [
+        {
+          internalType: "string",
+          name: "_recordingUrl",
+          type: "string",
+        },
+        {
+          internalType: "uint256",
+          name: "_streamId",
+          type: "uint256",
+        },
+      ],
+      name: "saveRecording",
+      outputs: [],
+      stateMutability: "nonpayable",
+      type: "function",
+    },
+    {
+      inputs: [
+        {
+          internalType: "string",
+          name: "_title",
+          type: "string",
+        },
+        {
+          internalType: "string",
+          name: "_thumbnail",
+          type: "string",
+        },
+        {
+          internalType: "string",
+          name: "_desp",
+          type: "string",
+        },
+        {
+          internalType: "string",
+          name: "_roomId",
+          type: "string",
+        },
+        {
+          internalType: "bool",
+          name: "_exclusive",
+          type: "bool",
+        },
+        {
+          internalType: "string[]",
+          name: "_categories",
+          type: "string[]",
+        },
+        {
+          internalType: "string",
+          name: "_hashtags",
+          type: "string",
+        },
+      ],
+      name: "startStream",
+      outputs: [],
+      stateMutability: "nonpayable",
+      type: "function",
+    },
+    {
+      inputs: [
+        {
+          internalType: "uint256",
+          name: "_streamId",
+          type: "uint256",
+        },
+      ],
+      name: "stopStream",
+      outputs: [],
+      stateMutability: "nonpayable",
+      type: "function",
+    },
+    {
+      inputs: [],
+      name: "streamId",
+      outputs: [
+        {
+          internalType: "uint256",
+          name: "_value",
+          type: "uint256",
         },
       ],
       stateMutability: "view",
@@ -618,7 +803,7 @@ const contractConfig: IContractConfig = {
     },
     {
       inputs: [],
-      name: "streamId",
+      name: "userId",
       outputs: [
         {
           internalType: "uint256",

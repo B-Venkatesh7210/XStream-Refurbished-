@@ -68,19 +68,33 @@ const HostView = () => {
 
   return (
     <div className="w-[50%] h-auto flex flex-col justify-start items-start gap-2 mb-4">
-      <div className="relative h-[3rem] w-auto min-w-[8rem] bg-primaryGrey rounded-lg flex flex-row justify-start items-center py-2 px-4 cursor-pointer hover:bg-secondaryGrey">
-        <div className="rounded-[50%] w-[2rem] h-[2rem] overflow-hidden">
-          <Image
-            alt="Profile Picture"
-            src={ProfilePicture}
-            objectFit="cover"
-          ></Image>
+      <div className="w-full flex flex-row justify-between items-baseline">
+        <div className="relative h-[3rem] w-auto min-w-[8rem] bg-primaryGrey rounded-lg flex flex-row justify-start items-center py-2 px-4 cursor-pointer hover:bg-secondaryGrey">
+          <div className="rounded-[50%] w-[2rem] h-[2rem] overflow-hidden">
+            <Image
+              alt="Profile Picture"
+              src={ProfilePicture}
+              objectFit="cover"
+            ></Image>
+          </div>
+          <span className="text-textRed font-rubik font-bold ml-3">
+            Xstream
+          </span>
         </div>
-        <span className="text-textRed font-rubik font-bold ml-3">Xstream</span>
+        <span
+          className="text-textRed font-rubik font-semibold text-[1.2rem]"
+          onClick={() => {
+            console.log(camStream, videoRef, micStream);
+          }}
+        >
+          Exclusive
+        </span>
+        {/* //TODO conditional render this  */}
       </div>
+
       <div className="w-full flex flex-row justify-between items-baseline">
         <span
-          className="text-white font-rubik font-bold text-[2rem]"
+          className="text-white font-rubik font-bold text-[1.5rem] ml-2 w-[75%] max-h-[5rem] h-auto inline-block break-words content-fit"
           onClick={() => {
             console.log(camStream, videoRef, micStream);
           }}
@@ -184,15 +198,6 @@ const HostView = () => {
         >
           Description
         </span>
-        <span
-          className="text-textRed font-rubik font-semibold text-[1.2rem]"
-          onClick={() => {
-            console.log(camStream, videoRef, micStream);
-          }}
-        >
-          Exclusive
-        </span>
-        {/* //TODO conditional render this  */}
       </div>
       <div className="w-full h-auto min-h-[10rem] rounded-sm border-[1px] border-secondaryGrey border-solid text-white font-rubik font-extralight tracking-wider p-4 bg-primaryGrey flex flex-col justify-between items-start gap-10 mb-8">
         <span>

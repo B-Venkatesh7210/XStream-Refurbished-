@@ -129,3 +129,54 @@ body {
   box-shadow: 0 0 30px 3px rgb(62, 16, 10, 0.5); /* Adjust the shadow color and spread as needed */
 }
 
+.parent-div {
+  position: relative;
+  height: 28rem;
+  width: 28rem;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+.parent-div::before {    
+  content: "";
+  background-image: url("../../assets/images/streamer.png");
+  background-size: cover;
+  position: absolute;
+  top: 0px;
+  right: 0px;
+  bottom: 0px;
+  left: 0px;
+  opacity: 0.45;
+  transition: opacity 0.3s ease;
+}
+
+.parent-div:hover::before {
+  opacity: 1;
+}
+
+.parent-div2 {
+  position: relative;
+  height: 28rem;
+  width: 28rem;
+  border-radius: 6px;
+  cursor: pointer;
+
+}
+
+.parent-div2::before {    
+  content: "";
+  background-image: url("../../assets/images/user.png");
+  background-size: cover;
+  position: absolute;
+  top: 0px;
+  right: 0px;
+  bottom: 0px;
+  left: 0px;
+  opacity: 0.45;
+  transition: opacity 0.3s ease;
+}
+
+.parent-div2:hover::before {
+  opacity: 1;
+}
+

@@ -125,7 +125,7 @@ const Lobby = () => {
   return (
     <div className="bg flex flex-col justify-start items-center scrollbar-hidden content">
       <Navbar isSticky={true}></Navbar>
-      <div className="w-full h-[15vh]"></div>
+      <div className="w-full h-[10vh]"></div>
       <div className="h-auto w-[90%] flex mt-10 flex-row justify-between items-start px-10 mb-10">
         <div className="h-[80vh] flex flex-col justify-start items-start">
           <div className="flex flex-row justify-start items-center">

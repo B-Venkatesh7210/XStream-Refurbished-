@@ -15,11 +15,11 @@ const PrimaryButton: React.FC<ButtonProps> = ({
   label,
   textSize,
   disabled,
-  action,
+  action
 }) => {
   return (
     <div
-      className={`${h} ${w} flex flex-row justify-center items-center ${textSize} text-white font-rubik font-extrabold transition delay-75 rounded-[2px] ${
+      className={`${h} ${w} flex flex-row justify-center items-center ${textSize} ${disabled ? "text-white/70" : "text-white"} font-rubik font-extrabold transition delay-75 rounded-[2px] ${
         disabled
           ? "border-[1.5px] border-solid border-secondaryGrey bg-primaryGrey"
           : "border-[1.5px] border-solid border-secondaryRed bg-primaryRed cursor-pointer hover:bg-secondaryRed"

@@ -7,11 +7,17 @@ import { useRouter } from "next/router";
 import axios from "axios";
 import Context from "../contexts/context";
 import { useLobby, useRoom } from "@huddle01/react/hooks";
+import { useSignerContext } from "@/contexts/signerContext";
+import Account from "../../assets/images/account.png";
+import { useAccount } from "wagmi";
+import Router from "next/router";
 
 const DropDownMenu = () => {
   const router = useRouter();
   const context: any = useContext(Context);
   const { joinLobby, leaveLobby, isLoading, isLobbyJoined, error } = useLobby();
+  const { isUser, isStreamer, userData } = useSignerContext();
+  const { address } = useAccount();
 
   const createRoom = async () => {
     try {
@@ -25,20 +31,40 @@ const DropDownMenu = () => {
     }
   };
 
+  const handleQuery = () => {
+    if (isUser) {
+      return { user: address };
+    } else if (isStreamer) {
+      return { streamer: address};
+    } else {
+      return { idle: address };
+    }
+  };
+
   return (
-    <div className="absolute top-12 w-[120%] right-0 bg-[#250707] rounded-sm shadow-lg">
+    <div className="absolute top-10 w-[10rem] right-0 bg-[#250707] rounded-sm shadow-lg">
       <ul className="pb-2">
         <li className="px-2 pt-2 flex flex-row justify-start items-center">
           <div
             className="px-2 py-2 cursor-pointer flex flex-row hover:bg-[#331c1c] rounded-lg w-full justify-start items-center gap-3"
             onClick={() => {
-              router.push("/dashboard");
+              const query = handleQuery();
+              Router.push({
+                pathname: "/dashboard",
+                query,
+              });
             }}
           >
-            <div className="rounded-[50%] w-[1.5rem] h-[1.5rem] overflow-hidden">
+            <div className="rounded-[50%] w-[1.5rem] h-[1.5rem] overflow-hidden bg-white/70">
               <Image
                 alt="Profile Picture"
-                src={ProfilePicture}
+                src={
+                  isUser
+                    ? `https://ipfs.io/ipfs/${userData?.profilePicture}`
+                    : isStreamer
+                    ? `https://ipfs.io/ipfs/QmRRPWG96cmgTn2qSzjwr2qvfNEuhunv6FNeMFGa9bx6mQ`
+                    : Account
+                }
                 objectFit="cover"
               ></Image>
             </div>
@@ -47,22 +73,27 @@ const DropDownMenu = () => {
             </span>
           </div>
         </li>
-        <li className="px-2 pt-2 flex flex-row justify-start items-center">
-          <div
-            className="px-2 py-2 cursor-pointer flex flex-row hover:bg-[#331c1c] rounded-lg w-full justify-start items-center gap-3"
-            onClick={async () => {
-              console.log("Clicked");
-              const roomId: string = await createRoom();
-              console.log(roomId);
-              context.setRoomId(roomId);
-              joinLobby(roomId);
-              router.push("/lobby");
-            }}
-          >
-            <StreamIcon style={{ fontSize: 25, color: "white" }}></StreamIcon>
-            <span className="text-white font-rubik text-[0.9rem]">Stream</span>
-          </div>
-        </li>
+        {isStreamer && (
+          <li className="px-2 pt-2 flex flex-row justify-start items-center">
+            <div
+              className="px-2 py-2 cursor-pointer flex flex-row hover:bg-[#331c1c] rounded-lg w-full justify-start items-center gap-3"
+              onClick={async () => {
+                console.log("Clicked");
+                const roomId: string = await createRoom();
+                console.log(roomId);
+                context.setRoomId(roomId);
+                joinLobby(roomId);
+                router.push("/lobby");
+              }}
+            >
+              <StreamIcon style={{ fontSize: 25, color: "white" }}></StreamIcon>
+              <span className="text-white font-rubik text-[0.9rem]">
+                Stream
+              </span>
+            </div>
+          </li>
+        )}
+
         <li className="px-2 pt-2 flex flex-row justify-start items-center">
           <div className="px-2 py-2 cursor-pointer flex flex-row hover:bg-[#331c1c] rounded-lg w-full justify-start items-center gap-3">
             <CollectionsIcon

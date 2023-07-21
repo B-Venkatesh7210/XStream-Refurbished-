@@ -45,7 +45,6 @@ const wagmiClient = createClient({
 
 export default function App({ Component, pageProps }: AppProps) {
   const { initialize, isInitialized } = useHuddle01();
-  const [isDisconnected, setIsDisconnected] = useState<boolean>(false);
   const [roomId, setRoomId] = useState<string>("No Room Id");
 
   useEffect(() => {

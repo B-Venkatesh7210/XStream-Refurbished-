@@ -1,7 +1,7 @@
 import { IContractConfig } from "../utils/types";
 
 const nftContractConfig: IContractConfig = {
-  address: "0x099a74D041Ab9A8Ca656eFc97136465c634618Ea",
+  address: "0x5193e1d1bFb77E2591ebd3a5Eec406CF1BDcF716",
   abi: [
     {
       inputs: [

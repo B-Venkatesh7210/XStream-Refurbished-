@@ -3,11 +3,15 @@ import { useSignerContext } from "@/contexts/signerContext";
 import React from "react";
 import { useSigner } from "wagmi";
 import { useAccount } from "wagmi";
+import { useLobby, useRoom } from "@huddle01/react/hooks";
+
 
 const Home = () => {
-  const { contract, signer } = useSignerContext();
+  const { contract, nftContract, signer } = useSignerContext();
   const { data: signer1 } = useSigner();
   const { isDisconnected } = useAccount();
+  const { joinLobby, leaveLobby, isLoading, isLobbyJoined, error } = useLobby();
+
 
   return (
     <div className="bg flex flex-col justify-start items-center scrollbar-hidden content">
@@ -17,7 +21,7 @@ const Home = () => {
           <span
             className="text-white text-[2rem]"
             onClick={() => {
-              console.log(contract, signer, signer1);
+              console.log(contract, nftContract)
             }}
           >
             Hello
