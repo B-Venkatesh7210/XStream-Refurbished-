@@ -2,6 +2,12 @@ import React, { useState } from "react";
 import Navbar from "@/components/Navbar";
 import Image from "next/image";
 import PrimaryButton from "@/components/PrimaryButton";
+import AddAPhotoIcon from "@mui/icons-material/AddAPhoto";
+import { useSignerContext } from "@/contexts/signerContext";
+import { ethers } from "ethers";
+import { useRouter } from "next/router";
+import { NFTStorage, File, Blob } from "nft.storage";
+
 
 interface FormDataProps {
   name: string;
@@ -12,6 +18,11 @@ interface FormDataProps {
 const CreateStreamer = () => {
   const nftSvgString = process.env.NEXT_PUBLIC_NFT_SVG_STRING as string;
   const svgDataUrl = `data:image/svg+xml;base64,${btoa(nftSvgString)}`;
+  const [selectedImage, setSelectedImage] = useState<any>(null);
+  const [profilePicture, setProfilePicture] = useState<File | null>(null);
+  const [profilePictureName, setProfilePictureName] = useState<string | null>(
+    null
+  );
   const [nftString, setNftString] = useState<string>(svgDataUrl);
   const [nftStringSVG, setNftStringSVG] = useState<string>(nftSvgString);
   const [formData, setFormData] = useState<FormDataProps>({
@@ -37,8 +48,14 @@ const CreateStreamer = () => {
     "Climate",
     "Other",
   ];
+  const { contract, getContractInfo } = useSignerContext();
+  const router = useRouter();
 
   const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
+
+  const client = new NFTStorage({
+    token: process.env.NEXT_PUBLIC_NFTSTORAGE_KEY as string,
+  });
 
   const handleCategoryClick = (category: string) => {
     if (selectedCategories.includes(category)) {
@@ -116,11 +133,84 @@ const CreateStreamer = () => {
       formData.name != "" &&
       formData.desp != "" &&
       formData.nftSupply != 0 &&
+      selectedImage != null &&
       selectedCategories.length != 0
     ) {
       status = false;
     }
     return status;
+  };
+
+  const handleImageChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+
+    if (file) {
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setSelectedImage(reader.result);
+      };
+      reader.readAsDataURL(file);
+
+      setProfilePicture(file);
+      setProfilePictureName(file.name);
+    } else {
+      setSelectedImage(null);
+      setProfilePicture(null);
+      setProfilePictureName(null);
+    }
+  };
+
+  const profilePictureUpload = async () => {
+    const imageFile = new File(
+      [profilePicture as File],
+      profilePictureName as string,
+      {
+        type: profilePicture?.type,
+      }
+    );
+    const imageBlob = imageFile.slice(0, imageFile.size, imageFile.type);
+    const cid = await client.storeBlob(imageBlob);
+    return cid;
+  };
+
+  const uploadNFT = async () => {
+    const blob = new Blob([nftStringSVG], { type: "image/svg+xml" });
+    const cid = await client.storeBlob(blob);
+    const metadata = {
+      name: `Xstream NFT ${formData.name}`,
+      description: `This NFT is of ${formData.name} with description as ${formData.desp}.`,
+      image: `ipfs://${cid}`,
+    };
+    const metadataJSON = JSON.stringify(metadata);
+    const metadataBlob = new Blob([metadataJSON], { type: "application/json" });
+    const metadataCID = await client.storeBlob(metadataBlob);
+    console.log(metadataCID);
+    const metaData = `ipfs://${metadataCID}`;
+    return { metadata: metaData, cid: cid };
+  };
+
+  const createStreamer = async () => {
+    console.log(selectedCategories)
+    const profilePictureCid = await profilePictureUpload();
+    console.log(profilePictureCid)
+    const { metadata, cid } = await uploadNFT();
+    const bigNftSupply = ethers.utils.parseUnits(
+      formData.nftSupply.toString(),
+      0
+    );
+
+    const createStreamer = await contract.createStreamer(
+      formData.name,
+      formData.desp,
+      metadata,
+      cid,
+      profilePictureCid,
+      bigNftSupply,
+      selectedCategories
+    );
+    await createStreamer.wait()
+    await getContractInfo()
+    router.push("/dashboard")
   };
 
   return (
@@ -129,22 +219,79 @@ const CreateStreamer = () => {
       <div className="h-[24rem] w-[24rem] mt-8">
         <Image alt="NFT" src={nftString} width="448" height="448" />
       </div>
-      <div className="h-auto w-[75%] bg-primaryGrey rounded-sm flex flex-col justify-center items-start py-8 px-20 my-8 gap-8">
-        <div className="w-full flex flex-col justify-start items-start gap-2">
-          <span className="text-white text-[1.4rem] font-rubik font-normal tracking-widest">
-            Name
-          </span>
-          <div className="h-[4rem] w-full bg-secondaryGrey rounded-sm pl-4">
-            <input
-              type="text"
-              id="name"
-              className="appearance-none bg-transparent border-none outline-none text-primaryRed drop-shadow-[0_1.2px_1.2px_rgba(0,0,0,0.8)] text-[2.5rem] font-dieNasty"
-              onChange={(e: any) => {
-                handleNameChange(e);
-              }}
-            />
+      <div className="h-auto w-[75%] bg-primaryGrey/40 rounded-sm flex flex-col justify-center items-start py-8 px-20 my-8 gap-8">
+        <div className="w-full flex flex-row justify-between items-center">
+          <div className="w-[60%] flex flex-col justify-start items-start gap-2">
+            <span className="text-white text-[1.4rem] font-rubik font-normal tracking-widest">
+              Name
+            </span>
+            <div className="h-[4rem] w-full bg-secondaryGrey rounded-sm pl-4">
+              <input
+                type="text"
+                id="name"
+                className="appearance-none bg-transparent border-none outline-none text-primaryRed drop-shadow-[0_1.2px_1.2px_rgba(0,0,0,0.8)] text-[2.5rem] font-dieNasty"
+                onChange={(e: any) => {
+                  handleNameChange(e);
+                }}
+              />
+            </div>
+          </div>
+          <div className="relative h-[10rem] w-[10rem] p-2 rounded-[50%] bg-secondaryGrey flex flex-col justify-center items-center gap-2">
+            {selectedImage ? (
+              <>
+                <Image
+                  src={selectedImage}
+                  alt="Profile Picture"
+                  layout="fill"
+                  objectFit="contain"
+                  className="object-cover h-full w-full rounded-[50%]"
+                />
+                <input
+                  type="file"
+                  accept="image/*"
+                  className="absolute inset-0 opacity-0 cursor-pointer"
+                  onChange={handleImageChange}
+                />
+              </>
+            ) : (
+              <>
+                <AddAPhotoIcon
+                  style={{ fontSize: 30, color: "white" }}
+                ></AddAPhotoIcon>
+                {selectedImage ? (
+                  <>
+                    <Image
+                      src={selectedImage}
+                      alt="Profile Picture"
+                      layout="fill"
+                      objectFit="contain"
+                      className="object-cover h-full w-full rounded-[50%]"
+                    />
+                    <input
+                      type="file"
+                      accept="image/*"
+                      className="absolute inset-0 opacity-0 cursor-pointer"
+                      onChange={handleImageChange}
+                    />
+                  </>
+                ) : (
+                  <>
+                    <span className="text-center text-white text-[0.8rem]">
+                      Choose Profile Picture
+                    </span>
+                    <input
+                      type="file"
+                      accept="image/*"
+                      className="absolute inset-0 opacity-0 cursor-pointer"
+                      onChange={handleImageChange}
+                    />
+                  </>
+                )}
+              </>
+            )}
           </div>
         </div>
+
         <div className="w-full flex flex-col justify-start items-start gap-2">
           <span className="text-white text-[1.4rem] font-rubik font-normal tracking-widest">
             Description
@@ -200,11 +347,11 @@ const CreateStreamer = () => {
         <div className="w-full flex flex-row justify-end items-center mt-8">
           <PrimaryButton
             h="h-[3.5rem]"
-            w="w-[12rem]"
+            w="w-[15rem]"
             textSize="text-[1.2rem]"
-            label={"CREATE USER"}
+            label={"CREATE STREAMER"}
             action={() => {
-              console.log("Clicked");
+              createStreamer();
             }}
             disabled={handleAllCheck()}
           ></PrimaryButton>

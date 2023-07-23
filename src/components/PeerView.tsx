@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import Image from "next/image";
 import ProfilePicture from "../../assets/images/profilePicture.jpg";
 import { Video, Audio } from "@huddle01/react/components";
@@ -11,24 +11,101 @@ import {
   useLivestream,
 } from "@huddle01/react/hooks";
 import { useRouter } from "next/router";
+import Router from "next/router";
 import PeopleIcon from "@mui/icons-material/People";
 import ShareIcon from "@mui/icons-material/Share";
 import SecondaryButton from "./SecondaryButton";
+import { useStreamContext } from "@/contexts/streamContext";
+import contractConfig from "@/config/contractConfig";
+import { useSignerContext } from "@/contexts/signerContext";
+import { useAccount } from "wagmi";
+import { useCurrUserOrStreamerContext } from "@/contexts/currUserOrStreamerContext";
 
 const PeerView = () => {
   const { peers } = usePeers();
   const router = useRouter();
+  const { address } = useAccount();
+  const { contract, isUser, isStreamer, nftContract } = useSignerContext();
+  const { streamData, streamerData, streamId, streamCategories } =
+    useStreamContext();
+  const { getCurrStreamerData } = useCurrUserOrStreamerContext();
+  const [follow, setFollow] = useState<boolean>(false);
+  const [subscribed, setSubscribed] = useState<boolean>(false);
+
+  const getFollowData = async () => {
+    if (isUser) {
+      const userFollows: boolean = await contract.userFollowsStreamer(
+        address,
+        streamerData?.streamerAdd
+      );
+      setFollow(userFollows);
+    } else if (isStreamer) {
+      const streamerFollows: boolean = await contract.streamerFollowsStreamer(
+        address,
+        streamerData?.streamerAdd
+      );
+      setFollow(streamerFollows);
+    }
+  };
+
+  const getSubscribedData = async () => {
+    const balance = await nftContract.balanceOf(
+      address,
+      streamerData?.streamerId
+    );
+    if (balance > 0) {
+      setSubscribed(true);
+    } else {
+      setSubscribed(false);
+    }
+  };
+
+  useEffect(() => {
+    if (streamerData && streamData) {
+      getFollowData();
+      getSubscribedData();
+    }
+  }, [streamerData, streamData]);
+
+  const followStreamer = async () => {
+    const followStreamer = await contract.follow(streamerData?.streamerAdd);
+    await followStreamer.wait();
+    setFollow(true);
+  };
+
+  const unfollowStreamer = async () => {
+    const unfollowStreamer = await contract.unfollow(streamerData?.streamerAdd);
+    await unfollowStreamer.wait();
+    setFollow(false);
+  };
+
+  const subscribeStreamer = async () => {
+    const subscribeStreamer = await contract.mintNft(streamerData?.streamerAdd);
+    await subscribeStreamer.wait();
+    setSubscribed(true);
+  };
 
   return (
     <div className="w-[50%] h-auto flex flex-col justify-start items-start gap-2 mb-4">
       <div className="w-full flex flex-row justify-between items-start">
         <div className="flex flex-row justify-start items-start">
-          <div className="relative flex flex-col justify-start items-center w-[5rem] h-[5rem]">
+          <div
+            className="relative flex flex-col justify-start items-center w-[5rem] h-[5rem] cursor-pointer"
+            onClick={async () => {
+              await getCurrStreamerData(streamerData?.streamerAdd as string);
+              Router.push({
+                pathname: "/dashboard",
+                query: { streamer: streamerData?.name },
+              });
+            }}
+          >
             <div className="rounded-[50%] w-[4rem] h-[4rem] overflow-hidden">
               <Image
                 alt="Profile Picture"
-                src={ProfilePicture}
+                src={`https://ipfs.io/ipfs/${streamerData?.profilePicture}`}
                 objectFit="cover"
+                width={200}
+                height={200}
               ></Image>
             </div>
             <div className="absolute bottom-1 h-[1.4rem] w-[3rem] rounded-md bg-primaryRed text-white font-rubik font-semibold text-[0.7rem] flex flex-col justify-center items-center">
@@ -36,19 +113,28 @@ const PeerView = () => {
             </div>
           </div>
           <div className="w-[80%] flex flex-col justify-start items-start ml-4">
-            <div className="relative h-[2.2rem] w-auto min-w-[6rem] bg-primaryGrey rounded-lg flex flex-row justify-start items-center py-2 cursor-pointer hover:bg-secondaryGrey mb-2">
-              <span className="text-textRed font-rubik font-bold ml-3">
-                Xstream
+            <div
+              className="relative h-[2.2rem] w-auto min-w-[6rem] bg-primaryGrey rounded-lg flex flex-row justify-start items-center py-2 cursor-pointer hover:bg-secondaryGrey mb-2"
+              onClick={async () => {
+                await getCurrStreamerData(streamerData?.streamerAdd as string);
+                Router.push({
+                  pathname: "/dashboard",
+                  query: { streamer: streamerData?.name },
+                });
+              }}
+            >
+              <span className="text-textRed font-rubik font-bold mx-3">
+                {streamerData?.name}
               </span>
             </div>
             <span className="text-white font-rubik font-bold text-[1.5rem] ml-2 w-full max-h-[5rem] h-auto inline-block break-words content-fit">
-              This is the title of the streamer
+              {streamData?.title}
             </span>
           </div>
         </div>
         <div className="flex flex-col justify-between items-end h-full">
           <span className="text-textRed font-rubik font-semibold text-[1.2rem]">
-            Exclusive
+            {streamData?.exclusive ? "Exclusive" : ""}
           </span>
           <span className="text-white font-rubik font-semibold text-[1rem] mt-5">
             {router.query.roomId}
@@ -62,7 +148,7 @@ const PeerView = () => {
           .map((peer: any) => (
             <div
               key={peer.peerId}
-              className="h-[28rem] mt-4 aspect-video bg-zinc-800/50 rounded-2xl relative overflow-hidden"
+              className="w-full h-full aspect-video bg-zinc-800/50 rounded-2xl relative overflow-hidden"
             >
               <Video
                 peerId={""}
@@ -100,38 +186,35 @@ const PeerView = () => {
             h="h-[2.2rem]"
             textSize="text-[1rem]"
             action1={() => {
-              console.log("BG is red and disabled is false");
+              followStreamer();
             }}
             action2={() => {
-              console.log("BG is grey and disabled is true");
+              unfollowStreamer();
             }}
-            disabled={false}
+            disabled={follow}
             iconType="follow"
           ></SecondaryButton>
           <SecondaryButton
             h="h-[2.2rem]"
             textSize="text-[1rem]"
             action1={() => {
-              console.log("BG is red and disabled is false");
+              subscribeStreamer();
             }}
-            action2={() => {
-              console.log("BG is grey and disabled is true");
-            }}
-            disabled={true}
+            action2={() => {}}
+            disabled={subscribed}
             iconType="subscribe"
           ></SecondaryButton>
         </div>
       </div>
       <div className="grid grid-flow-row grid-cols-4 gap-4 h-auto w-full mt-6">
-        <div className="w-auto px-2 h-[2.4rem] rounded-2xl flex flex-row justify-center items-center text-white font-rubik font-bold text-[0.8rem] cursor-pointer bg-primaryRed">
-          Entertaiment
-        </div>
-        <div className="w-auto px-2 h-[2.4rem] rounded-2xl flex flex-row justify-center items-center text-white font-rubik font-bold text-[0.8rem] cursor-pointer bg-primaryRed">
-          Gaming
-        </div>
-        <div className="w-auto px-2 h-[2.4rem] rounded-2xl flex flex-row justify-center items-center text-white font-rubik font-bold text-[0.8rem] cursor-pointer bg-primaryRed">
-          Fashion
-        </div>
+        {streamCategories?.map((category, index) => (
+          <div
+            key={index}
+            className="w-auto px-2 h-[2.4rem] bg-primaryRed rounded-2xl flex flex-row justify-center items-center text-white font-rubik font-bold text-[0.8rem] cursor-pointer"
+          >
+            {category}
+          </div>
+        ))}
       </div>
       <div className="w-full flex flex-row justify-between items-baseline mt-4">
         <span className="text-white font-rubik font-semibold text-[1.5rem]">
@@ -139,27 +222,9 @@ const PeerView = () => {
         </span>
       </div>
       <div className="w-full h-auto min-h-[10rem] rounded-sm border-[1px] border-secondaryGrey border-solid text-white font-rubik font-extralight tracking-wider p-4 bg-primaryGrey flex flex-col justify-between items-start gap-10 mb-8">
-        <span>
-          A long description is written here for your convenience A long
-          description is written here for your convenienceA long description is
-          written here for your convenienceA long description is written here
-          for your convenienceA long description is written here for your
-          conveniencevA long description is written here for your convenienceA
-          long description is written here for your convenienceA long
-          description is written here for your convenienceA long description is
-          written here for your convenience A long description is written here
-          for your convenience A long description is written here for your
-          convenienceA long description is written here for your convenienceA
-          long description is written here for your convenienceA long
-          description is written here for your conveniencevA long description is
-          written here for your convenienceA long description is written here
-          for your convenienceA long description is written here for your
-          convenienceA long description is written here for your convenience
-        </span>
+        <span>{streamData?.desp}</span>
         <span className="text-white font-rubik font-semibold tracking-wider">
-          #Entertaiment #Gaming #Fashion #Entertaiment #Gaming
-          #Fashion#Entertaiment #Gaming #Fashion#Entertaiment #Gaming
-          #Fashion#Entertaiment #Gaming <div id="Fashionv"></div>
+          {streamData?.hashtags}
         </span>
       </div>
     </div>

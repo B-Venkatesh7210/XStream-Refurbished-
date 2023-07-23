@@ -1,3 +1,5 @@
+import { BigNumber } from "ethers"; 
+
 export interface IContractConfig {
   address: string;
   abi: any[];
@@ -9,7 +11,8 @@ export interface IUserData {
   name: string;
   desp: string;
   profilePicture: string;
-  collection: string[];
+  collection: string[] | undefined;
+  following: string[] | undefined;
 }
 
 export interface IStreamerData {
@@ -21,8 +24,24 @@ export interface IStreamerData {
   profilePicture: string;
   totalNfts: string;
   categories: string[];
-  followers: string[];
+  followers: string[] | undefined;
+  following: string[] | undefined;
   subscribers: string;
   isLive: boolean;
-  recordingUrls: string[];
+  recordingUrls: string[] | undefined;
+}
+
+export interface IStreamData {
+  streamId: BigNumber;
+  streamer: string;
+  streamerName: string;
+  roomId: string;
+  title: string;
+  desp: string;
+  thumbnail: string;
+  exclusive: boolean;
+  categories: string[];
+  hashtags: string;
+  isLive: boolean;
+  totalAmount: BigNumber;
 }

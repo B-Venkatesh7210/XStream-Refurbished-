@@ -13,6 +13,8 @@ import { configureChains } from "wagmi";
 import { createClient } from "wagmi";
 import { jsonRpcProvider } from "wagmi/providers/jsonRpc";
 import { SignerContextProvider } from "@/contexts/signerContext";
+import { StreamContextProvider } from "@/contexts/streamContext";
+import { CurrentUserOrStreamerContextProvider } from "@/contexts/currUserOrStreamerContext";
 
 const { chains, provider } = configureChains(
   [polygonMumbai],
@@ -62,7 +64,11 @@ export default function App({ Component, pageProps }: AppProps) {
           }}
         >
           <SignerContextProvider>
-            <Component {...pageProps} />
+            <StreamContextProvider>
+              <CurrentUserOrStreamerContextProvider>
+                <Component {...pageProps} />
+              </CurrentUserOrStreamerContextProvider>
+            </StreamContextProvider>
           </SignerContextProvider>
         </Context.Provider>
       </RainbowKitProvider>

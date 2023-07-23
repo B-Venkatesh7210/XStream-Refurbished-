@@ -13,17 +13,21 @@ interface FormDataProps {
 }
 
 interface EditProfileProps {
-  isUser: boolean;
+  setChoseUser?: any;
+  setEnterEdit?: any;
 }
 
-const EditProfile: React.FC<EditProfileProps> = ({ isUser }) => {
-  const { userData, contract } = useSignerContext();
+const EditProfile: React.FC<EditProfileProps> = ({
+  setChoseUser,
+  setEnterEdit,
+}) => {
+  const { userData, contract, isUser, getContractInfo } = useSignerContext();
   const [selectedImage, setSelectedImage] = useState<any>(null);
   const [profilePicture, setProfilePicture] = useState<File | null>(null);
   const [profilePictureName, setProfilePictureName] = useState<string | null>(
     null
   );
-  const router = useRouter()
+  const router = useRouter();
   const [formData, setFormData] = useState<FormDataProps>({
     name: isUser ? userData?.name : "Enter Your Name",
     desp: isUser
@@ -99,16 +103,38 @@ const EditProfile: React.FC<EditProfileProps> = ({ isUser }) => {
   };
 
   const createUser = async () => {
-    const profilePictureCid = await profilePictureUpload();
+    let profilePictureCid;
+    if (selectedImage) {
+      profilePictureCid = await profilePictureUpload();
+    } else {
+      profilePictureCid = "";
+    }
     const createUser = await contract.createUser(
       formData.name,
       formData.desp,
       profilePictureCid
     );
     await createUser.wait();
-    
+    await getContractInfo();
+    setChoseUser(false);
+  };
 
-    router.push(router.asPath).then(() => window.location.reload());
+  const saveChanges = async () => {
+    let profilePictureCid;
+    if (selectedImage) {
+      profilePictureCid = await profilePictureUpload();
+    } else {
+      profilePictureCid = "";
+    }
+
+    const saveChanges = await contract.editUser(
+      formData.name,
+      formData.desp,
+      profilePictureCid
+    );
+    await saveChanges.wait();
+    await getContractInfo();
+    setEnterEdit(false);
   };
 
   return (
@@ -136,7 +162,7 @@ const EditProfile: React.FC<EditProfileProps> = ({ isUser }) => {
               ) : (
                 <>
                   <Image
-                    src={ProfilePicture}
+                    src={`https://ipfs.io/ipfs/${userData?.profilePicture}`}
                     alt="Profile Picture"
                     layout="fill"
                     objectFit="contain"
@@ -225,16 +251,29 @@ const EditProfile: React.FC<EditProfileProps> = ({ isUser }) => {
             />
           </div>
         </div>
-        <div className="absolute bottom-0 right-0">
+        <div className="absolute bottom-0 right-0 flex flex-row justify-start items-center gap-4">
+          {isUser && (
+            <PrimaryButton
+              h="h-[3.5rem]"
+              w="w-[6rem]"
+              textSize="text-[1.2rem]"
+              label={"EXIT"}
+              action={() => {
+                setEnterEdit(false)
+              }}
+              disabled={false}
+            ></PrimaryButton>
+          )}
+
           <PrimaryButton
             h="h-[3.5rem]"
             w="w-[12rem]"
             textSize="text-[1.2rem]"
             label={isUser ? "SAVE CHANGES" : "CREATE USER"}
             action={() => {
-              createUser();
+              isUser ? saveChanges() : createUser();
             }}
-            disabled={false}
+            disabled={handleAllCheck()}
           ></PrimaryButton>
         </div>
       </div>

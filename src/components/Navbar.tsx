@@ -39,6 +39,8 @@ const Navbar: React.FC<NavbarProps> = ({ isSticky }) => {
     ellipAddress = getEllipsisTxt(address,4)
   }
 
+  //TODO add streamerBalcance
+
   return (
     <div
       className={`h-[10vh] z-50 bg-[#1f1f1f] border-b-2 border-[#3a3a3a] w-full flex flex-row justify-between items-center py-2 px-4 ${
@@ -68,10 +70,10 @@ const Navbar: React.FC<NavbarProps> = ({ isSticky }) => {
         </div>
       </div>
       <div className="flex flex-row justify-start items-center">
-        <ConnectButton></ConnectButton>
+        <ConnectButton showBalance={false}></ConnectButton>
         {!isDisconnected && (
           <div
-            className="relative h-[2.5rem] w-auto min-w-[8rem] bg-primaryGrey rounded-sm flex flex-row justify-start items-center py-2 px-4 ml-4 cursor-pointer hover:bg-secondaryGrey"
+            className="relative h-[2.5rem] w-auto bg-primaryGrey rounded-sm flex flex-row justify-start items-center py-2 px-4 ml-4 cursor-pointer hover:bg-secondaryGrey"
             onClick={() => {
               setDropDownMenu(!dropDownMenu);
             }}
@@ -85,7 +87,7 @@ const Navbar: React.FC<NavbarProps> = ({ isSticky }) => {
                   isUser
                     ? `https://ipfs.io/ipfs/${userData?.profilePicture}`
                     : isStreamer
-                    ? `https://ipfs.io/ipfs/QmRRPWG96cmgTn2qSzjwr2qvfNEuhunv6FNeMFGa9bx6mQ`
+                    ? `https://ipfs.io/ipfs/${streamerData?.profilePicture}`
                     : Account
                 }
                 objectFit="cover"

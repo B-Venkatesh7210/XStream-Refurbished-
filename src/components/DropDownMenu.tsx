@@ -16,7 +16,7 @@ const DropDownMenu = () => {
   const router = useRouter();
   const context: any = useContext(Context);
   const { joinLobby, leaveLobby, isLoading, isLobbyJoined, error } = useLobby();
-  const { isUser, isStreamer, userData } = useSignerContext();
+  const { isUser, isStreamer, userData, streamerData } = useSignerContext();
   const { address } = useAccount();
 
   const createRoom = async () => {
@@ -31,16 +31,6 @@ const DropDownMenu = () => {
     }
   };
 
-  const handleQuery = () => {
-    if (isUser) {
-      return { user: address };
-    } else if (isStreamer) {
-      return { streamer: address};
-    } else {
-      return { idle: address };
-    }
-  };
-
   return (
     <div className="absolute top-10 w-[10rem] right-0 bg-[#250707] rounded-sm shadow-lg">
       <ul className="pb-2">
@@ -48,11 +38,10 @@ const DropDownMenu = () => {
           <div
             className="px-2 py-2 cursor-pointer flex flex-row hover:bg-[#331c1c] rounded-lg w-full justify-start items-center gap-3"
             onClick={() => {
-              const query = handleQuery();
               Router.push({
                 pathname: "/dashboard",
-                query,
               });
+              
             }}
           >
             <div className="rounded-[50%] w-[1.5rem] h-[1.5rem] overflow-hidden bg-white/70">
@@ -62,10 +51,12 @@ const DropDownMenu = () => {
                   isUser
                     ? `https://ipfs.io/ipfs/${userData?.profilePicture}`
                     : isStreamer
-                    ? `https://ipfs.io/ipfs/QmRRPWG96cmgTn2qSzjwr2qvfNEuhunv6FNeMFGa9bx6mQ`
+                    ? `https://ipfs.io/ipfs/${streamerData?.profilePicture}`
                     : Account
                 }
                 objectFit="cover"
+                width={200}
+                height={200}
               ></Image>
             </div>
             <span className="text-white font-rubik text-[0.9rem]">

@@ -16,6 +16,7 @@ export const SignerContext = React.createContext<{
   isStreamer: boolean;
   streamerData: IStreamerData | undefined;
   streamerBalance: number | undefined;
+  getContractInfo: () => Promise<void>;
 }>({
   signer: undefined,
   contract: undefined,
@@ -25,6 +26,7 @@ export const SignerContext = React.createContext<{
   isStreamer: false,
   streamerData: undefined,
   streamerBalance: undefined,
+  getContractInfo: async () => {},
 });
 
 export const useSignerContext = () => useContext(SignerContext);
@@ -80,8 +82,6 @@ export const SignerContextProvider = ({ children }: any) => {
       const streamerBalanceData = await contract.streamerToBalance(address);
       const streamerBalance = parseFloat(streamerBalanceData) / 10 ** 18;
       setStreamerBalance(streamerBalance);
-
-      //TODO give the streamer permission to add profile picture
       setStreamerData({
         ...streamerData,
         streamerId: streamerId,
@@ -103,6 +103,7 @@ export const SignerContextProvider = ({ children }: any) => {
 
   useEffect(() => {
     if (signer && address) {
+      console.log("signerContext was called")
       getContractInfo();
     }
   }, [signer, address]);
@@ -118,6 +119,7 @@ export const SignerContextProvider = ({ children }: any) => {
         isStreamer,
         streamerData,
         streamerBalance,
+        getContractInfo,
       }}
     >
       {children}

@@ -15,8 +15,9 @@ import { useRouter } from "next/router";
 import ImageIcon from "@mui/icons-material/Image";
 import Image from "next/image";
 import PrimaryButton from "@/components/PrimaryButton";
+import { useSignerContext } from "@/contexts/signerContext";
 import Router from "next/router";
-import { BarBarEqualsToken } from "typescript";
+import { NFTStorage, File, Blob } from "nft.storage";
 
 interface FormDataProps {
   title: string;
@@ -33,14 +34,19 @@ const Lobby = () => {
   const [isExclusive, setIsExclusive] = useState<boolean>(false);
   const {
     fetchVideoStream,
-    produceVideo,
     stopVideoStream,
     stream: camStream,
-    isProducing,
     error: camError,
   } = useVideo();
-  const { fetchAudioStream, stopAudioStream, stream: micStream, error: micError } = useAudio();
+  const {
+    fetchAudioStream,
+    stopAudioStream,
+    stream: micStream,
+    error: micError,
+  } = useAudio();
   const [selectedImage, setSelectedImage] = useState<any>(null);
+  const [thumbnail, setThumbnail] = useState<File | null>(null);
+  const [thumbnailName, setThumbnailName] = useState<string | null>(null);
   const [formData, setFormData] = useState<FormDataProps>({
     title: "",
     desp: "",
@@ -66,6 +72,10 @@ const Lobby = () => {
   ];
   const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
   const router = useRouter();
+  const { contract } = useSignerContext();
+  const client = new NFTStorage({
+    token: process.env.NEXT_PUBLIC_NFTSTORAGE_KEY as string,
+  });
 
   const handleCategoryClick = (category: string) => {
     if (selectedCategories.includes(category)) {
@@ -79,16 +89,22 @@ const Lobby = () => {
     }
   };
 
-  const handleImageChange = (event: any) => {
-    const file = event.target.files[0];
-    const reader = new FileReader();
-
-    reader.onloadend = () => {
-      setSelectedImage(reader.result);
-    };
+  const handleImageChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
 
     if (file) {
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setSelectedImage(reader.result);
+      };
       reader.readAsDataURL(file);
+
+      setThumbnail(file);
+      setThumbnailName(file.name);
+    } else {
+      setSelectedImage(null);
+      setThumbnail(null);
+      setThumbnailName(null);
     }
   };
 
@@ -120,6 +136,39 @@ const Lobby = () => {
       status = false;
     }
     return status;
+  };
+
+  const thumbnailUpload = async () => {
+    const imageFile = new File([thumbnail as File], thumbnailName as string, {
+      type: thumbnail?.type,
+    });
+    const imageBlob = imageFile.slice(0, imageFile.size, imageFile.type);
+    const cid = await client.storeBlob(imageBlob);
+    return cid;
+  };
+
+  const startStream = async () => {
+    const thumbnailCid = await thumbnailUpload();
+    const streamIdData = await contract.streamId();
+    const streamId = streamIdData.toNumber();
+    const startStream = await contract.startStream(
+      formData.title,
+      thumbnailCid,
+      formData.desp,
+      context.roomId,
+      isExclusive,
+      selectedCategories,
+      formData.hashtags
+    );
+    await startStream.wait();
+    
+    joinRoom();
+    Router.push({
+      pathname: "/room",
+      query: { roomId: context.roomId, streamId: streamId },
+      //TODO
+      //Change stream Id
+    });
   };
 
   return (
@@ -329,13 +378,7 @@ const Lobby = () => {
               textSize="text-[1.2rem]"
               label="START STREAM"
               action={() => {
-                joinRoom();
-                Router.push({
-                  pathname: "/room",
-                  query: { roomId: context.roomId, streamId: 0 },
-                  //TODO
-                  //Change stream Id
-                });
+                startStream();
               }}
               disabled={handleAllCheck()}
             ></PrimaryButton>

@@ -1,7 +1,7 @@
 import { IContractConfig } from "../utils/types";
 
 const contractConfig: IContractConfig = {
-  address: "0x02a169C3A1cE62dBBedc4D2CF970F2b02f1508Fd",
+  address: "0x363FE396B762810cD96CBDe2Ed2bD4B34B50a580",
   abi: [
     {
       inputs: [
@@ -309,6 +309,19 @@ const contractConfig: IContractConfig = {
     {
       inputs: [
         {
+          internalType: "address",
+          name: "_streamerAdd",
+          type: "address",
+        },
+      ],
+      name: "follow",
+      outputs: [],
+      stateMutability: "nonpayable",
+      type: "function",
+    },
+    {
+      inputs: [
+        {
           internalType: "uint256",
           name: "_streamId",
           type: "uint256",
@@ -417,6 +430,139 @@ const contractConfig: IContractConfig = {
           internalType: "struct xstream.Stream[]",
           name: "",
           type: "tuple[]",
+        },
+      ],
+      stateMutability: "view",
+      type: "function",
+    },
+    {
+      inputs: [
+        {
+          internalType: "uint256",
+          name: "_streamId",
+          type: "uint256",
+        },
+      ],
+      name: "getStreamCategories",
+      outputs: [
+        {
+          internalType: "string[]",
+          name: "",
+          type: "string[]",
+        },
+      ],
+      stateMutability: "view",
+      type: "function",
+    },
+    {
+      inputs: [
+        {
+          internalType: "address",
+          name: "_streamer",
+          type: "address",
+        },
+      ],
+      name: "getStreamerCategories",
+      outputs: [
+        {
+          internalType: "string[]",
+          name: "",
+          type: "string[]",
+        },
+      ],
+      stateMutability: "view",
+      type: "function",
+    },
+    {
+      inputs: [
+        {
+          internalType: "address",
+          name: "_streamer",
+          type: "address",
+        },
+      ],
+      name: "getStreamerFollowers",
+      outputs: [
+        {
+          internalType: "address[]",
+          name: "",
+          type: "address[]",
+        },
+      ],
+      stateMutability: "view",
+      type: "function",
+    },
+    {
+      inputs: [
+        {
+          internalType: "address",
+          name: "_streamer",
+          type: "address",
+        },
+      ],
+      name: "getStreamerFollowing",
+      outputs: [
+        {
+          internalType: "address[]",
+          name: "",
+          type: "address[]",
+        },
+      ],
+      stateMutability: "view",
+      type: "function",
+    },
+    {
+      inputs: [
+        {
+          internalType: "address",
+          name: "_streamer",
+          type: "address",
+        },
+      ],
+      name: "getStreamerRecordingUrls",
+      outputs: [
+        {
+          internalType: "string[]",
+          name: "",
+          type: "string[]",
+        },
+      ],
+      stateMutability: "view",
+      type: "function",
+    },
+    {
+      inputs: [
+        {
+          internalType: "address",
+          name: "_user",
+          type: "address",
+        },
+      ],
+      name: "getUserCollection",
+      outputs: [
+        {
+          internalType: "string[]",
+          name: "",
+          type: "string[]",
+        },
+      ],
+      stateMutability: "view",
+      type: "function",
+    },
+    {
+      inputs: [
+        {
+          internalType: "address",
+          name: "_user",
+          type: "address",
+        },
+      ],
+      name: "getUserFollowing",
+      outputs: [
+        {
+          internalType: "address[]",
+          name: "",
+          type: "address[]",
         },
       ],
       stateMutability: "view",
@@ -770,6 +916,30 @@ const contractConfig: IContractConfig = {
       type: "function",
     },
     {
+      inputs: [
+        {
+          internalType: "address",
+          name: "",
+          type: "address",
+        },
+        {
+          internalType: "address",
+          name: "",
+          type: "address",
+        },
+      ],
+      name: "streamerFollowsStreamer",
+      outputs: [
+        {
+          internalType: "bool",
+          name: "",
+          type: "bool",
+        },
+      ],
+      stateMutability: "view",
+      type: "function",
+    },
+    {
       inputs: [],
       name: "streamerId",
       outputs: [
@@ -796,6 +966,43 @@ const contractConfig: IContractConfig = {
           internalType: "uint256",
           name: "",
           type: "uint256",
+        },
+      ],
+      stateMutability: "view",
+      type: "function",
+    },
+    {
+      inputs: [
+        {
+          internalType: "address",
+          name: "_streamerAdd",
+          type: "address",
+        },
+      ],
+      name: "unfollow",
+      outputs: [],
+      stateMutability: "nonpayable",
+      type: "function",
+    },
+    {
+      inputs: [
+        {
+          internalType: "address",
+          name: "",
+          type: "address",
+        },
+        {
+          internalType: "address",
+          name: "",
+          type: "address",
+        },
+      ],
+      name: "userFollowsStreamer",
+      outputs: [
+        {
+          internalType: "bool",
+          name: "",
+          type: "bool",
         },
       ],
       stateMutability: "view",
