@@ -4,7 +4,7 @@ import { Signer } from "ethers";
 import { useAccount, useSigner } from "wagmi";
 import contractConfig from "../config/contractConfig";
 import nftContractConfig from "../config/nftContractConfig";
-import { IUserData, IStreamerData } from "@/utils/types";
+import { IUserData, IStreamerData, IStreamData } from "@/utils/types";
 import { BigNumber } from "ethers";
 
 export const SignerContext = React.createContext<{
@@ -16,6 +16,8 @@ export const SignerContext = React.createContext<{
   isStreamer: boolean;
   streamerData: IStreamerData | undefined;
   streamerBalance: number | undefined;
+  livestreams: IStreamData[] | [];
+  getLivestreamsData: () => Promise<void>;
   getContractInfo: () => Promise<void>;
 }>({
   signer: undefined,
@@ -26,6 +28,8 @@ export const SignerContext = React.createContext<{
   isStreamer: false,
   streamerData: undefined,
   streamerBalance: undefined,
+  livestreams: [],
+  getLivestreamsData: async () => {},
   getContractInfo: async () => {},
 });
 
@@ -41,6 +45,7 @@ export const SignerContextProvider = ({ children }: any) => {
   const [isStreamer, setIsStreamer] = useState<boolean>(false);
   const [streamerData, setStreamerData] = useState<IStreamerData>();
   const [streamerBalance, setStreamerBalance] = useState<number>();
+  const [livestreams, setLivestreams] = useState<IStreamData[]>([]);
 
   const getContractInfo = async () => {
     const contract: any = new ethers.Contract(
@@ -101,9 +106,16 @@ export const SignerContextProvider = ({ children }: any) => {
     setNftContract(nftContract);
   };
 
+  const getLivestreamsData = async () => {
+    //@ts-ignore
+    const livestreamsData: IStreamData[] = await contract.getLiveStreams();
+    console.log(livestreamsData);
+    setLivestreams(livestreamsData);
+  };
+
   useEffect(() => {
     if (signer && address) {
-      console.log("signerContext was called")
+      console.log("signerContext was called");
       getContractInfo();
     }
   }, [signer, address]);
@@ -119,6 +131,8 @@ export const SignerContextProvider = ({ children }: any) => {
         isStreamer,
         streamerData,
         streamerBalance,
+        livestreams,
+        getLivestreamsData,
         getContractInfo,
       }}
     >

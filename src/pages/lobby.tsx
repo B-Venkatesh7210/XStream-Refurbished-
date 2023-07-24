@@ -161,7 +161,6 @@ const Lobby = () => {
       formData.hashtags
     );
     await startStream.wait();
-    
     joinRoom();
     Router.push({
       pathname: "/room",

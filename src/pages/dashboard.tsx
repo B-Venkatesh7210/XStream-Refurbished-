@@ -67,12 +67,16 @@ const Dashboard = () => {
       <Navbar isSticky={false}></Navbar>
       {isRouterQuery ? (
         <>
-        {
-          router.query.streamer && <StreamerProfile isRouterQuery={isRouterQuery}></StreamerProfile>
-        }
-        {
-          router.query.user && <UserProfile isRouterQuery={isRouterQuery}></UserProfile>
-        }
+          {router.query.streamer && (
+            <div className="h-auto min-h-[80vh] mt-8 w-[90%] bg-secondaryGrey bg-opacity-20 rounded-2xl flex flex-col justify-start items-center">
+              <StreamerProfile isRouterQuery={isRouterQuery}></StreamerProfile>
+            </div>
+          )}
+          {router.query.user && (
+            <div className="h-[80vh] m-4 w-[90%] bg-secondaryGrey bg-opacity-20 rounded-2xl flex flex-col justify-start items-center">
+              <UserProfile isRouterQuery={isRouterQuery}></UserProfile>
+            </div>
+          )}
         </>
       ) : (
         <>
@@ -89,7 +93,10 @@ const Dashboard = () => {
               {enterEdit ? (
                 <EditProfile setEnterEdit={setEnterEdit}></EditProfile>
               ) : (
-                <UserProfile isRouterQuery={isRouterQuery} setEnterEdit={setEnterEdit}></UserProfile>
+                <UserProfile
+                  isRouterQuery={isRouterQuery}
+                  setEnterEdit={setEnterEdit}
+                ></UserProfile>
               )}
             </div>
           )}

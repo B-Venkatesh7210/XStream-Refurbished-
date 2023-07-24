@@ -9,6 +9,7 @@ import { extract } from "query-string/base";
 import { useAccount } from "wagmi";
 import SecondaryButton from "./SecondaryButton";
 import { useCurrUserOrStreamerContext } from "@/contexts/currUserOrStreamerContext";
+import { useStreamContext } from "@/contexts/streamContext";
 
 interface IStreamerProfileProps {
   isRouterQuery?: boolean;
@@ -42,6 +43,7 @@ const StreamerProfile: React.FC<IStreamerProfileProps> = ({
     getStreamerFollowers,
     getStreamerFollowing,
   } = useCurrUserOrStreamerContext();
+  const {setFollowsStreamer, setSubscribedStreamer} = useStreamContext()
 
   const extract = async () => {
     const txn = await contract.extractBalance();
@@ -51,7 +53,7 @@ const StreamerProfile: React.FC<IStreamerProfileProps> = ({
 
   const getCategories = async (address: string | undefined) => {
     //TODO make this getStreamerCategories after final deployment
-    const categories: string[] = await contract.streamerCategories(address);
+    const categories: string[] = await contract.getStreamerCategories(address);
     setCategories(categories);
   };
 
@@ -100,12 +102,14 @@ const StreamerProfile: React.FC<IStreamerProfileProps> = ({
     const followStreamer = await contract.follow(currStreamerData?.streamerAdd);
     await followStreamer.wait();
     setFollow(true);
+    setFollowsStreamer(true);
   };
 
   const unfollowStreamer = async () => {
     const unfollowStreamer = await contract.unfollow(currStreamerData?.streamerAdd);
     await unfollowStreamer.wait();
     setFollow(false);
+    setFollowsStreamer(false);
   };
 
   const subscribeStreamer = async () => {
@@ -114,6 +118,7 @@ const StreamerProfile: React.FC<IStreamerProfileProps> = ({
     );
     await subscribeStreamer.wait();
     setSubscribed(true);
+    setSubscribedStreamer(true)
   };
   useEffect(() => {
     if (isRouterQuery) {
@@ -130,8 +135,8 @@ const StreamerProfile: React.FC<IStreamerProfileProps> = ({
   }, [streamerData]);
 
   return (
-    <div className="flex flex-row w-[90%] h-[90%] mt-8">
-      <div className="flex flex-col justify-start items-center">
+    <div className="flex flex-row w-[90%] h-auto mt-8">
+      <div className="h-auto flex flex-col justify-start items-center">
         <div className="relative h-[8rem] w-[8rem] p-2 rounded-[50%] bg-primaryGrey flex flex-col justify-center items-center gap-2">
           {/* Default Picture, if the User doesnt have a profile picture */}
           {(isRouterQuery ? currStreamerData : streamerData)?.profilePicture ==
@@ -177,7 +182,7 @@ const StreamerProfile: React.FC<IStreamerProfileProps> = ({
           </span>
         </div>
       </div>
-      <div className="flex flex-col justify-start items-start w-[45%] h-full  ml-12 gap-4">
+      <div className="flex flex-col justify-start items-start w-[45%] h-auto ml-12 gap-4">
         <div className="flex flex-row justify-between items-center w-full">
           <div className="h-[4.5rem] w-full rounded-lg text-primaryRed drop-shadow-[0_1.2px_1.2px_rgba(0,0,0,0.8)] text-[3rem] font-dieNasty">
             {(isRouterQuery ? currStreamerData : streamerData)?.name}
@@ -198,9 +203,9 @@ const StreamerProfile: React.FC<IStreamerProfileProps> = ({
           )}
         </div>
 
-        <div className="flex flex-col justify-start items-start w-full">
+        <div className="h-auto flex flex-col justify-start items-start w-full">
           <div
-            className="h-auto min-h-[8rem] max-h-[20rem] w-full rounded-lg bg-secondaryGrey text-white text-base p-3"
+            className="h-auto min-h-[8rem] max-h-[20rem] w-full rounded-lg bg-secondaryGrey text-white text-base p-3 overflow-scroll"
             onClick={() => {}}
           >
             {(isRouterQuery ? currStreamerData : streamerData)?.desp}
@@ -267,6 +272,7 @@ const StreamerProfile: React.FC<IStreamerProfileProps> = ({
           ></PrimaryButton>
         )}
       </div>
+      {/* //TODO Collection of videos of the streamer */}
     </div>
   );
 };

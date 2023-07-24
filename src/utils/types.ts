@@ -45,3 +45,11 @@ export interface IStreamData {
   isLive: boolean;
   totalAmount: BigNumber;
 }
+
+export interface IChatData {
+  sender: string;
+  name: string;
+  message: string;
+  amount: number;
+  isSubscriber: boolean;
+}

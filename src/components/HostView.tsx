@@ -75,6 +75,7 @@ const HostView = () => {
     const stopStream = await contract.stopStream(streamData?.streamId);
     await stopStream.wait();
     router.push("/home");
+    //TODO destroy camstream and micstream
   }
 
   return (
@@ -103,7 +104,7 @@ const HostView = () => {
         <span
           className="text-white font-rubik font-bold text-[1.5rem] ml-2 w-[75%] max-h-[5rem] h-auto inline-block break-words content-fit"
           onClick={() => {
-            console.log(camStream, videoRef, micStream);
+            console.log(streamData?.streamId);
           }}
         >
           {streamData?.title}

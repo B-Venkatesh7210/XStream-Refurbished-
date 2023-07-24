@@ -137,7 +137,7 @@ body {
   cursor: pointer;
 }
 
-.parent-div::before {    
+.parent-div::before {
   content: "";
   background-image: url("../../assets/images/streamer.png");
   background-size: cover;
@@ -160,10 +160,9 @@ body {
   width: 28rem;
   border-radius: 6px;
   cursor: pointer;
-
 }
 
-.parent-div2::before {    
+.parent-div2::before {
   content: "";
   background-image: url("../../assets/images/user.png");
   background-size: cover;
@@ -180,3 +179,9 @@ body {
   opacity: 1;
 }
 
+.glass-container {
+  background: rgba(211, 40, 40, 0.05); 
+  border-radius: 2px;  
+  backdrop-filter: blur(40px); 
+  box-shadow: 1px 1px 5px rgba(236, 17, 9, 0.37);
+}

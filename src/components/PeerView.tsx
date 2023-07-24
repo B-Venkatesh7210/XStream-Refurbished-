@@ -20,14 +20,21 @@ import contractConfig from "@/config/contractConfig";
 import { useSignerContext } from "@/contexts/signerContext";
 import { useAccount } from "wagmi";
 import { useCurrUserOrStreamerContext } from "@/contexts/currUserOrStreamerContext";
+import { BigNumber } from "ethers";
 
 const PeerView = () => {
   const { peers } = usePeers();
   const router = useRouter();
   const { address } = useAccount();
   const { contract, isUser, isStreamer, nftContract } = useSignerContext();
-  const { streamData, streamerData, streamId, streamCategories } =
-    useStreamContext();
+  const {
+    streamData,
+    streamerData,
+    streamId,
+    streamCategories,
+    setFollowsStreamer,
+    setSubscribedStreamer,
+  } = useStreamContext();
   const { getCurrStreamerData } = useCurrUserOrStreamerContext();
   const [follow, setFollow] = useState<boolean>(false);
   const [subscribed, setSubscribed] = useState<boolean>(false);
@@ -39,12 +46,14 @@ const PeerView = () => {
         streamerData?.streamerAdd
       );
       setFollow(userFollows);
+      setFollowsStreamer(userFollows);
     } else if (isStreamer) {
       const streamerFollows: boolean = await contract.streamerFollowsStreamer(
         address,
         streamerData?.streamerAdd
       );
       setFollow(streamerFollows);
+      setFollowsStreamer(streamerFollows);
     }
   };
 
@@ -55,8 +64,10 @@ const PeerView = () => {
     );
     if (balance > 0) {
       setSubscribed(true);
+      setSubscribedStreamer(true);
     } else {
       setSubscribed(false);
+      setSubscribedStreamer(false);
     }
   };
 
@@ -67,22 +78,54 @@ const PeerView = () => {
     }
   }, [streamerData, streamData]);
 
+  useEffect(() => {
+    const addStreamStoppedListener = async () => {
+      if (streamData) {
+        const eventEmitter2 = contract.on(
+          "StreamStopped",
+          (streamId: BigNumber, streamer: string, streamerName: string) => {
+            const streamIdData = BigNumber.from(streamId);
+            const streamIdString: string = streamIdData.toString();
+            console.log("I was called");
+            const streamIdString2: string | undefined =
+              streamData?.streamId.toString();
+            console.log(streamIdString, streamIdString2);
+            if (streamIdString === streamIdString2) {
+              console.log("I was called again");
+              alert(`The Stream has been stopped.`);
+              router.push("/home");
+            }
+          }
+        );
+
+        return () => {
+          eventEmitter2.removeAllListeners("StreamStopped");
+        };
+      }
+    };
+
+    addStreamStoppedListener();
+  }, [streamData]);
+
   const followStreamer = async () => {
     const followStreamer = await contract.follow(streamerData?.streamerAdd);
     await followStreamer.wait();
     setFollow(true);
+    setFollowsStreamer(true);
   };
 
   const unfollowStreamer = async () => {
     const unfollowStreamer = await contract.unfollow(streamerData?.streamerAdd);
     await unfollowStreamer.wait();
     setFollow(false);
+    setFollowsStreamer(false);
   };
 
   const subscribeStreamer = async () => {
     const subscribeStreamer = await contract.mintNft(streamerData?.streamerAdd);
     await subscribeStreamer.wait();
     setSubscribed(true);
+    setSubscribedStreamer(true);
   };
 
   return (
@@ -127,7 +170,12 @@ const PeerView = () => {
                 {streamerData?.name}
               </span>
             </div>
-            <span className="text-white font-rubik font-bold text-[1.5rem] ml-2 w-full max-h-[5rem] h-auto inline-block break-words content-fit">
+            <span
+              className="text-white font-rubik font-bold text-[1.5rem] ml-2 w-full max-h-[5rem] h-auto inline-block break-words content-fit"
+              onClick={() => {
+                console.log(streamData?.streamId.toString());
+              }}
+            >
               {streamData?.title}
             </span>
           </div>
@@ -161,7 +209,12 @@ const PeerView = () => {
       </div>
       <div className="w-full flex flex-row justify-between items-center mt-4">
         <div className="flex flex-row justify-start items-center">
-          <div className="relative flex flex-row justify-center items-baseline p-[6px] bg-secondaryGrey w-auto gap-2">
+          <div
+            className="relative flex flex-row justify-center items-baseline p-[6px] bg-secondaryGrey w-auto gap-2"
+            onClick={() => {
+              console.log(streamData?.title);
+            }}
+          >
             <PeopleIcon
               style={{
                 fontSize: 22,

@@ -81,8 +81,6 @@ const Navbar: React.FC<NavbarProps> = ({ isSticky }) => {
             <div className="rounded-[50%] w-[1.5rem] h-[1.5rem] overflow-hidden bg-white/70">
               <Image
                 alt="Profile Picture"
-                //TODO add streamerData.profilePicture condition
-                //@ts-ignore
                 src={
                   isUser
                     ? `https://ipfs.io/ipfs/${userData?.profilePicture}`

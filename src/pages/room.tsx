@@ -39,12 +39,13 @@ const Room = () => {
     // };
 
     // getData();
-  }, [isHost]);
+  }, [isHost, streamId]);
 
   return (
     <div className="bg flex flex-col justify-start items-center scrollbar-hidden content">
       <Navbar isSticky={true}></Navbar>
       <div className="w-full h-[15vh]"></div>
+      {/* //TODO make a choice for exclusive streams, that users can mint the NFT of the streamer and can watch the stream */}
       <div className="w-[90%] h-[100vh] mt-6 flex flex-row justify-between items-start">
         {isHost ? <HostView></HostView> : <PeerView></PeerView>}
         <StreamChat></StreamChat>
