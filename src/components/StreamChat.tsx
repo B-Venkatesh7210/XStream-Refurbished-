@@ -1,9 +1,10 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import Image from "next/image";
 import PolygonLogo from "../../assets/logos/PolygonLogo.png";
 import SendIcon from "@mui/icons-material/Send";
 import { useAccount } from "wagmi";
 import { BigNumber } from "ethers";
+import Context from "@/contexts/context";
 import { useSignerContext } from "@/contexts/signerContext";
 import { useStreamContext } from "@/contexts/streamContext";
 import ChatMessage from "./ChatMessage";
@@ -14,6 +15,7 @@ interface ChatProps {
 }
 
 const StreamChat = () => {
+  const context: any = useContext(Context)
   const { address } = useAccount();
   const [chat, setChat] = useState<ChatProps>({
     message: "",
@@ -50,6 +52,7 @@ const StreamChat = () => {
     console.log(streamData?.streamId.toNumber() as number);
     if (isUser) {
       if (chat.amount == 0) {
+        context.setLoading(true)
         console.log("I am user");
         const sendChat = await contract.chat(
           streamData?.streamId,
@@ -65,8 +68,10 @@ const StreamChat = () => {
         );
         await sendChat.wait();
         getAllChatData(streamData?.streamId.toNumber() as number);
+        context.setLoading(false)
         setChat({ ...chat, message: "", amount: 0 });
       } else {
+        context.setLoading(true)
         console.log("I am user with superchat");
         const amountBig: BigNumber = BigNumber.from(
           (chat.amount * 10 ** 18).toString()
@@ -87,10 +92,12 @@ const StreamChat = () => {
         );
         await sendChat.wait();
         getAllChatData(streamData?.streamId.toNumber() as number);
+        context.setLoading(false)
         setChat({ ...chat, message: "", amount: 0 });
       }
     } else if (isStreamer) {
       if (chat.amount == 0) {
+        context.setLoading(true)
         console.log("I am streamer");
         const sendChat = await contract.chat(
           streamData?.streamId,
@@ -106,8 +113,10 @@ const StreamChat = () => {
         );
         await sendChat.wait();
         getAllChatData(streamData?.streamId.toNumber() as number);
+        context.setLoading(false)
         setChat({ ...chat, message: "", amount: 0 });
       } else {
+        context.setLoading(true)
         console.log("I am streamer with superchat");
         const amountBig: BigNumber = BigNumber.from(
           (chat.amount * 10 ** 18).toString()
@@ -128,6 +137,7 @@ const StreamChat = () => {
         );
         await sendChat.wait();
         getAllChatData(streamData?.streamId.toNumber() as number);
+        context.setLoading(false)
         setChat({ ...chat, message: "", amount: 0 });
       }
     } else {

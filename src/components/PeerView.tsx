@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import Image from "next/image";
 import ProfilePicture from "../../assets/images/profilePicture.jpg";
 import { Video, Audio } from "@huddle01/react/components";
@@ -16,6 +16,7 @@ import PeopleIcon from "@mui/icons-material/People";
 import ShareIcon from "@mui/icons-material/Share";
 import SecondaryButton from "./SecondaryButton";
 import { useStreamContext } from "@/contexts/streamContext";
+import Context from "@/contexts/context";
 import contractConfig from "@/config/contractConfig";
 import { useSignerContext } from "@/contexts/signerContext";
 import { useAccount } from "wagmi";
@@ -23,6 +24,7 @@ import { useCurrUserOrStreamerContext } from "@/contexts/currUserOrStreamerConte
 import { BigNumber } from "ethers";
 
 const PeerView = () => {
+  const context: any = useContext(Context);
   const { peers } = usePeers();
   const router = useRouter();
   const { address } = useAccount();
@@ -73,8 +75,10 @@ const PeerView = () => {
 
   useEffect(() => {
     if (streamerData && streamData) {
+      true;
       getFollowData();
       getSubscribedData();
+      context.setLoading(false);
     }
   }, [streamerData, streamData]);
 
@@ -108,22 +112,28 @@ const PeerView = () => {
   }, [streamData]);
 
   const followStreamer = async () => {
+    context.setLoading(true);
     const followStreamer = await contract.follow(streamerData?.streamerAdd);
     await followStreamer.wait();
+    context.setLoading(false);
     setFollow(true);
     setFollowsStreamer(true);
   };
 
   const unfollowStreamer = async () => {
+    context.setLoading(true);
     const unfollowStreamer = await contract.unfollow(streamerData?.streamerAdd);
     await unfollowStreamer.wait();
+    context.setLoading(false);
     setFollow(false);
     setFollowsStreamer(false);
   };
 
   const subscribeStreamer = async () => {
+    context.setLoading(true);
     const subscribeStreamer = await contract.mintNft(streamerData?.streamerAdd);
     await subscribeStreamer.wait();
+    context.setLoading(false);
     setSubscribed(true);
     setSubscribedStreamer(true);
   };

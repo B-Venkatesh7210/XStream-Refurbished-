@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useContext } from "react";
 import AddAPhotoIcon from "@mui/icons-material/AddAPhoto";
 import Image from "next/image";
 import { useSignerContext } from "@/contexts/signerContext";
@@ -6,6 +6,7 @@ import PrimaryButton from "@/components/PrimaryButton";
 import ProfilePicture from "../../assets/images/profilePicture.jpg";
 import { NFTStorage, File, Blob } from "nft.storage";
 import { useRouter } from "next/router";
+import Context from "@/contexts/context";
 import HowToStart from "./HowToStart";
 
 interface FormDataProps {
@@ -22,6 +23,7 @@ const EditProfile: React.FC<EditProfileProps> = ({
   setChoseUser,
   setEnterEdit,
 }) => {
+  const context: any = useContext(Context);
   const { userData, contract, isUser, getContractInfo } = useSignerContext();
   const [selectedImage, setSelectedImage] = useState<any>(null);
   const [profilePicture, setProfilePicture] = useState<File | null>(null);
@@ -104,6 +106,7 @@ const EditProfile: React.FC<EditProfileProps> = ({
   };
 
   const createUser = async () => {
+    context.setLoading(true);
     let profilePictureCid;
     if (selectedImage) {
       profilePictureCid = await profilePictureUpload();
@@ -117,10 +120,12 @@ const EditProfile: React.FC<EditProfileProps> = ({
     );
     await createUser.wait();
     await getContractInfo();
+    context.setLoading(false);
     setChoseUser(false);
   };
 
   const saveChanges = async () => {
+    context.setLoading(true);
     let profilePictureCid;
     if (selectedImage) {
       profilePictureCid = await profilePictureUpload();
@@ -135,6 +140,7 @@ const EditProfile: React.FC<EditProfileProps> = ({
     );
     await saveChanges.wait();
     await getContractInfo();
+    context.setLoading(false);
     setEnterEdit(false);
   };
 
@@ -260,7 +266,7 @@ const EditProfile: React.FC<EditProfileProps> = ({
               textSize="text-[1.2rem]"
               label={"EXIT"}
               action={() => {
-                setEnterEdit(false)
+                setEnterEdit(false);
               }}
               disabled={false}
             ></PrimaryButton>

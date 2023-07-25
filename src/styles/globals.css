@@ -280,6 +280,47 @@ body {
   position: absolute;
 }
 
+
+/* Background 1 */
+.bg6 {
+  width: 100%;
+  height: auto;
+  min-height: 100vh;
+}
+
+.bg6::after {
+  content: "";
+  width: 15rem;
+  height: 12rem;
+  background: linear-gradient(
+    91.26deg,
+    rgb(209, 75, 75) 5%,
+    rgb(132, 47, 47) 70%
+  );
+  filter: blur(200px);
+  position: absolute;
+  transform: translate(-50%, -50%);
+  left: 20%; /* Set the initial position */
+  top: 65%; /* Set the initial position */
+}
+
+.bg6::before {
+  content: "";
+  width: 15rem;
+  height: 12rem;
+  background: radial-gradient(
+    circle,
+    rgb(132, 47, 47) 70%,
+    rgb(209, 75, 75) 5%
+  );
+  filter: blur(150px);
+  transform: matrix(-0.08, -0.99, 1, 0.05, 0, 0);
+  position: absolute;
+  left: 80%; /* Set the initial position */
+  top: 160%; /* Set the initial position */
+  transform: translate(-50%, -50%); /* Center the div */
+}
+
 .linear-text {
   background: linear-gradient(
     190deg,
@@ -373,3 +414,4 @@ body {
   backdrop-filter: blur(40px);
   box-shadow: 1px 1px 5px rgba(236, 17, 9, 0.37);
 }
+

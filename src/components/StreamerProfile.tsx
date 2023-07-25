@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useContext } from "react";
 import { useSignerContext } from "@/contexts/signerContext";
 import PersonIcon from "@mui/icons-material/Person";
 import Image from "next/image";
@@ -8,6 +8,7 @@ import PolygonLogo from "../../assets/logos/PolygonLogo.png";
 import { extract } from "query-string/base";
 import { useAccount } from "wagmi";
 import SecondaryButton from "./SecondaryButton";
+import Context from "@/contexts/context";
 import { useCurrUserOrStreamerContext } from "@/contexts/currUserOrStreamerContext";
 import { useStreamContext } from "@/contexts/streamContext";
 
@@ -18,6 +19,7 @@ interface IStreamerProfileProps {
 const StreamerProfile: React.FC<IStreamerProfileProps> = ({
   isRouterQuery,
 }) => {
+  const context: any = useContext(Context);
   const {
     signer,
     streamerData,
@@ -44,12 +46,14 @@ const StreamerProfile: React.FC<IStreamerProfileProps> = ({
     getStreamerFollowers,
     getStreamerFollowing,
   } = useCurrUserOrStreamerContext();
-  const {setFollowsStreamer, setSubscribedStreamer} = useStreamContext()
+  const { setFollowsStreamer, setSubscribedStreamer } = useStreamContext();
 
   const extract = async () => {
+    context.setLoading(true);
     const txn = await contract.extractBalance();
     await txn.wait();
     await getContractInfo();
+    context.setLoading(false);
   };
 
   const getCategories = async (address: string | undefined) => {
@@ -73,15 +77,15 @@ const StreamerProfile: React.FC<IStreamerProfileProps> = ({
         address,
         currStreamerData?.streamerAdd
       );
-      console.log(address, currStreamerData?.streamerAdd)
-      console.log("userFollows", userFollows)
+      console.log(address, currStreamerData?.streamerAdd);
+      console.log("userFollows", userFollows);
       setFollow(userFollows);
     } else if (isStreamer) {
       const streamerFollows: boolean = await contract.streamerFollowsStreamer(
         address,
         currStreamerData?.streamerAdd
       );
-      console.log("streamerFollows", streamerFollows)
+      console.log("streamerFollows", streamerFollows);
       setFollow(streamerFollows);
     }
   };
@@ -99,38 +103,50 @@ const StreamerProfile: React.FC<IStreamerProfileProps> = ({
   };
 
   const followStreamer = async () => {
+    context.setLoading(true);
     const followStreamer = await contract.follow(currStreamerData?.streamerAdd);
     await followStreamer.wait();
+    context.setLoading(false);
     setFollow(true);
     setFollowsStreamer(true);
   };
 
   const unfollowStreamer = async () => {
-    const unfollowStreamer = await contract.unfollow(currStreamerData?.streamerAdd);
+    context.setLoading(true);
+    const unfollowStreamer = await contract.unfollow(
+      currStreamerData?.streamerAdd
+    );
     await unfollowStreamer.wait();
+    context.setLoading(false);
     setFollow(false);
     setFollowsStreamer(false);
   };
 
   const subscribeStreamer = async () => {
+    context.setLoading(true);
     const subscribeStreamer = await contract.mintNft(
       currStreamerData?.streamerAdd
     );
     await subscribeStreamer.wait();
+    context.setLoading(false);
     setSubscribed(true);
-    setSubscribedStreamer(true)
+    setSubscribedStreamer(true);
   };
   useEffect(() => {
     if (isRouterQuery) {
+      context.setLoading(true);
       getStreamerCategories(currStreamerData?.streamerAdd as string);
       getStreamerFollowers(currStreamerData?.streamerAdd as string);
       getStreamerFollowing(currStreamerData?.streamerAdd as string);
       getSubscribedData();
       getFollowData();
+      context.setLoading(false);
     } else if (streamerData) {
+      context.setLoading(true);
       getCategories(address);
       getFollowers(address);
       getFollowing(address);
+      context.setLoading(false);
     }
   }, [streamerData]);
 
@@ -158,7 +174,12 @@ const StreamerProfile: React.FC<IStreamerProfileProps> = ({
           )}
         </div>
         <div className="flex flex-col justify-start items-center mt-10">
-          <span className="text-primaryRed font-rubik text-lg font-bold" onClick={()=>{console.log(streamerFollowers)}}>
+          <span
+            className="text-primaryRed font-rubik text-lg font-bold"
+            onClick={() => {
+              console.log(streamerFollowers);
+            }}
+          >
             Followers
           </span>
           <span className="text-white font-rubik text-lg font-bold">
@@ -272,7 +293,6 @@ const StreamerProfile: React.FC<IStreamerProfileProps> = ({
           ></PrimaryButton>
         )}
       </div>
-      {/* //TODO Collection of videos of the streamer */}
     </div>
   );
 };

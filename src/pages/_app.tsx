@@ -48,6 +48,7 @@ const wagmiClient = createClient({
 export default function App({ Component, pageProps }: AppProps) {
   const { initialize, isInitialized } = useHuddle01();
   const [roomId, setRoomId] = useState<string>("No Room Id");
+  const [loading, setLoading] = useState<boolean>(false)
 
   useEffect(() => {
     // its preferable to use env vars to store projectId
@@ -61,6 +62,8 @@ export default function App({ Component, pageProps }: AppProps) {
           value={{
             roomId,
             setRoomId,
+            loading,
+            setLoading
           }}
         >
           <SignerContextProvider>

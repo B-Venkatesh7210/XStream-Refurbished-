@@ -7,7 +7,6 @@ import EditIcon from "@mui/icons-material/Edit";
 import Image from "next/image";
 import { useSignerContext } from "../contexts/signerContext";
 import ProfilePicture from "../../assets/images/profilePicture.jpg";
-
 import HowToStart from "./HowToStart";
 
 interface UserProfileProps {

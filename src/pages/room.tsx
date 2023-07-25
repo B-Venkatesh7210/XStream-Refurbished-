@@ -1,4 +1,4 @@
-import React, { useState, useEffect, use } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import Navbar from "@/components/Navbar";
 import { useRouter } from "next/router";
 import HostView from "@/components/HostView";
@@ -9,8 +9,11 @@ import { useAccount } from "wagmi";
 import { IStreamData } from "@/utils/types";
 import { useSignerContext } from "@/contexts/signerContext";
 import NotASubscriber from "@/components/NotASubscriber";
+import LoadingModal from "@/components/LoadingModal";
+import Context from "@/contexts/context";
 
 const Room = () => {
+  const context: any = useContext(Context);
   const router = useRouter();
   const { address } = useAccount();
   const {
@@ -40,7 +43,9 @@ const Room = () => {
 
   useEffect(() => {
     const getData = async () => {
+      context.setLoading(true);
       setStreamId(parseInt(router.query.streamId as string));
+      context.setLoading(false)
     };
     getData();
 
@@ -66,13 +71,16 @@ const Room = () => {
 
   useEffect(() => {
     if (streamerData) {
+      context.setLoading(true);
       getSubscribedData();
+      context.setLoading(false);
     }
   }, [streamerData]);
 
   return (
     <div className="bg flex flex-col justify-start items-center scrollbar-hidden content">
       <Navbar isSticky={true}></Navbar>
+      <LoadingModal isOpen={context.loading}></LoadingModal>
       <div className="w-full h-[10vh]"></div>
       {streamData?.exclusive ? (
         isHost || subscribed ? (

@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useRef, useState } from "react";
 import { Router, useRouter } from "next/router";
 import PrimaryButton from "@/components/PrimaryButton";
 import Image from "next/image";
@@ -19,6 +19,7 @@ import XstreamTextLogo from "../../assets/logos/XstreamTextLogo.png";
 import Huddle01 from "../../assets/logos/Huddle01.png";
 import IPFSLogo from "../../assets/logos/IPFSLogo.png";
 import PolygonLogo from "../../assets/logos/PolygonLogo.png";
+import Slider from "react-slick";
 
 const LandingPage = () => {
   return (
@@ -49,7 +50,9 @@ const Main = () => {
           ></Image>
         </div>
         <div className="flex flex-row justify-start items-center gap-4">
-          <span className="text-white text-[1.5rem] font-rubik font-semibold mr-4">POWERED BY</span>
+          <span className="text-white text-[1.5rem] font-rubik font-semibold mr-4">
+            POWERED BY
+          </span>
           <div className="w-[6rem]">
             <Image alt="Huddle01 Logo" src={Huddle01}></Image>
           </div>
@@ -93,14 +96,11 @@ const Main = () => {
               }}
               disabled={false}
             ></PrimaryButton>
-            <div
-              className="h-[3.5rem] w-[12rem] flex flex-row text-white justify-center items-center text-[1.2rem] font-rubik font-extrabold transition delay-75 rounded-[2px] border-[1.5px] border-solid border-secondaryGrey bg-primaryGrey cursor-pointer hover:bg-secondaryGrey"
-              onClick={() => {
-                router.push("/home");
-              }}
-            >
-              LEARN MORE
-            </div>
+            <a target="_blank" href="https://devfolio.co/projects/xstream-8a0e">
+              <div className="h-[3.5rem] w-[12rem] flex flex-row text-white justify-center items-center text-[1.2rem] font-rubik font-extrabold transition delay-75 rounded-[2px] border-[1.5px] border-solid border-secondaryGrey bg-primaryGrey cursor-pointer hover:bg-secondaryGrey">
+                LEARN MORE
+              </div>
+            </a>
           </div>
         </div>
         <div className="relative w-[50%] h-[50vh] flex flex-col justify-start items-start gap-8">
@@ -151,11 +151,11 @@ const LiveChat = () => {
           <span className="text-textRed">Live</span> Superchats and Chat
         </span>
         <span className="text-white font-rubik font-normal text-[1.2rem] tracking-widest">
-          Streamers can live stream for the audience powered by HUDDLE01 SDK,
-          streamers can start{" "}
-          <span className="text-textRed font-bold">EXCLUSIVE STREAMS</span>{" "}
-          which only their subscribers owning their NFT can watch. Viewers can
-          send chat and Superchat to their favourite streamers with MATIC tokens
+          Viewers can send superchats and chats to their favourite streamers
+          with
+          <span className="text-textRed font-bold">MATIC TOKENS</span> which can
+          support streamers to stream more on the platform without any
+          intermediary fees.
         </span>
       </div>
       <div className="w-[40%] h-full flex flex-col justify-center items-center">
@@ -216,10 +216,9 @@ const HowToStart = () => {
       <span className="text-white font-rubik font-semibold text-[2rem]">
         Watch Video Demo
       </span>
-      <a target="_blank" href="https://www.youtube.com/watch?v=dQw4w9WgXcQ">
+      <a target="_blank" href="https://youtu.be/9xzaC6M2UWU">
         <div className="h-[4rem] w-[8rem] rounded-xl bg-secondaryRed/40 border-primaryRed border-[1px] mt-2 cursor-pointer flex flex-row justify-center items-center">
           <div className="h-[2.5rem] w-[2.5rem]">
-            {/* //TODO Youtube demo video link */}
             <Image alt="Youtube" src={Youtube}></Image>
           </div>
         </div>

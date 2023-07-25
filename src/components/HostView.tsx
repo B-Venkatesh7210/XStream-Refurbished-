@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect } from "react";
+import React, { useState, useRef, useEffect, useContext } from "react";
 import Image from "next/image";
 import ProfilePicture from "../../assets/images/profilePicture.jpg";
 import CameraOff from "@mui/icons-material/NoPhotography";
@@ -12,10 +12,12 @@ import {
 } from "@huddle01/react/hooks";
 import { useRouter } from "next/router";
 import ToggleButton from "./ToggleButton";
+import Context from "@/contexts/context";
 import { useStreamContext } from "@/contexts/streamContext";
 import { useSignerContext } from "@/contexts/signerContext";
 
 const HostView = () => {
+  const context: any = useContext(Context);
   const [cameraOn, setCamera] = useState<boolean>(false);
   const [micOn, setMic] = useState<boolean>(false);
   const videoRef = useRef<HTMLVideoElement>(null);
@@ -72,6 +74,7 @@ const HostView = () => {
   }, [micStream]);
 
   const stopStream = async () => {
+    context.setLoading(true);
     const stopStream = await contract.stopStream(streamData?.streamId);
     await stopStream.wait();
     stopVideoStream();
@@ -81,6 +84,7 @@ const HostView = () => {
       stopProducingAudio();
       setMic(false);
     }
+    context.setLoading(false);
     router.push("/home");
     //TODO destroy camstream and micstream
   };

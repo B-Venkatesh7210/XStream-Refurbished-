@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import Navbar from "@/components/Navbar";
 import EditProfile from "@/components/EditProfile";
 import UserProfile from "@/components/UserProfile";
@@ -7,12 +7,15 @@ import Image from "next/image";
 import StreamerImage from "../../assets/images/streamer.png";
 import UserImage from "../../assets/images/user.png";
 import PrimaryButton from "@/components/PrimaryButton";
+import LoadingModal from "@/components/LoadingModal";
 import { useRouter } from "next/router";
 import ChooseWisely from "@/components/ChooseWisely";
 import { useAccount } from "wagmi";
 import StreamerProfile from "@/components/StreamerProfile";
+import Context from "@/contexts/context";
 
 const Dashboard = () => {
+  const context: any = useContext(Context);
   const [enterEdit, setEnterEdit] = useState(false);
   const {
     isUser,
@@ -52,6 +55,7 @@ const Dashboard = () => {
       router.replace(`/dashboard?${queryParam}`, undefined, { shallow: true });
     };
     if (signer || address) {
+      context.setLoading(true);
       if (router.query.streamer) {
         setIsRouterQuery(true);
       } else if (router.query.user) {
@@ -59,12 +63,14 @@ const Dashboard = () => {
       } else {
         gettingQuery();
       }
+      context.setLoading(false);
     }
   }, [signer, address, isUser, isStreamer, streamerData]);
 
   return (
     <div className="bg flex flex-col justify-start items-center">
       <Navbar isSticky={false}></Navbar>
+      <LoadingModal isOpen={context.loading}></LoadingModal>
       {isRouterQuery ? (
         <>
           {router.query.streamer && (

@@ -1,24 +1,26 @@
 import Navbar from "@/components/Navbar";
 import { useSignerContext } from "@/contexts/signerContext";
-import React, { useEffect } from "react";
+import React, { useEffect, useState, useContext } from "react";
 import { useSigner } from "wagmi";
 import { useAccount } from "wagmi";
 import { useLobby, useRoom } from "@huddle01/react/hooks";
+import LoadingModal from "@/components/LoadingModal";
 import Router from "next/router";
 import { useCurrUserOrStreamerContext } from "@/contexts/currUserOrStreamerContext";
 import { useStreamContext } from "@/contexts/streamContext";
 import Image from "next/image";
 import Banner from "../../assets/images/banner.png";
 import PlayCircleFilledWhiteIcon from "@mui/icons-material/PlayCircleFilledWhite";
+import Context from "@/contexts/context";
 import StreamComponent from "@/components/StreamComponent";
 import { BigNumber } from "ethers";
 import VideoComponent from "@/components/VideoComponent";
 import Youtube from "../../assets/logos/Youtube.png";
 import collections from "@/utils/collections";
 
-//TODO add loading everywhere
 
 const Home = () => {
+  const context: any = useContext(Context);
   const { contract, nftContract, signer, getLivestreamsData, livestreams } =
     useSignerContext();
   const { data: signer1 } = useSigner();
@@ -29,13 +31,14 @@ const Home = () => {
     useStreamContext();
 
   const handleVideoClick = () => {
-    //TODO add the link of the demo video
-    window.open("https://www.youtube.com/watch?v=dQw4w9WgXcQ", "_blank");
+    window.open("https://youtu.be/9xzaC6M2UWU", "_blank");
   };
 
   useEffect(() => {
     if (contract) {
+      context.setLoading(true);
       getLivestreamsData();
+      context.setLoading(false);
     }
   }, [contract]);
 
@@ -75,10 +78,11 @@ const Home = () => {
     addStreamStartedListener();
   }, [contract]);
 
-  //TODO add original contracts in the contracts folder
+  
   return (
-    <div className="bg flex flex-col justify-start items-center scrollbar-hidden content">
+    <div className="bg6 flex flex-col justify-start items-center scrollbar-hidden content">
       <Navbar isSticky={true}></Navbar>
+      <LoadingModal isOpen={context.loading}></LoadingModal>
       {/* <div className="h-[100vh] w-full flex flex-col justify-center items-center">
         {!isDisconnected && (
           <span

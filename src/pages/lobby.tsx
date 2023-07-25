@@ -17,7 +17,9 @@ import Image from "next/image";
 import PrimaryButton from "@/components/PrimaryButton";
 import { useSignerContext } from "@/contexts/signerContext";
 import Router from "next/router";
+import LoadingModal from "@/components/LoadingModal";
 import { NFTStorage, File, Blob } from "nft.storage";
+
 
 interface FormDataProps {
   title: string;
@@ -148,6 +150,7 @@ const Lobby = () => {
   };
 
   const startStream = async () => {
+    context.setLoading(true)
     const thumbnailCid = await thumbnailUpload();
     const streamIdData = await contract.streamId();
     const streamId = streamIdData.toNumber();
@@ -162,6 +165,7 @@ const Lobby = () => {
     );
     await startStream.wait();
     joinRoom();
+    context.setLoading(false)
     Router.push({
       pathname: "/room",
       query: { roomId: context.roomId, streamId: streamId },
@@ -171,6 +175,7 @@ const Lobby = () => {
   return (
     <div className="bg flex flex-col justify-start items-center scrollbar-hidden content">
       <Navbar isSticky={true}></Navbar>
+      <LoadingModal isOpen={context.loading}></LoadingModal>
       <div className="w-full h-[10vh]"></div>
       <div className="h-auto w-[90%] flex mt-10 flex-row justify-between items-start px-10 mb-10">
         <div className="h-[80vh] flex flex-col justify-start items-start">

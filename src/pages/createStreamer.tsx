@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useContext } from "react";
 import Navbar from "@/components/Navbar";
 import Image from "next/image";
 import PrimaryButton from "@/components/PrimaryButton";
@@ -6,6 +6,8 @@ import AddAPhotoIcon from "@mui/icons-material/AddAPhoto";
 import { useSignerContext } from "@/contexts/signerContext";
 import { ethers } from "ethers";
 import { useRouter } from "next/router";
+import Context from "@/contexts/context";
+import LoadingModal from "@/components/LoadingModal";
 import { NFTStorage, File, Blob } from "nft.storage";
 
 
@@ -16,6 +18,7 @@ interface FormDataProps {
 }
 
 const CreateStreamer = () => {
+  const context: any = useContext(Context);
   const nftSvgString = process.env.NEXT_PUBLIC_NFT_SVG_STRING as string;
   const svgDataUrl = `data:image/svg+xml;base64,${btoa(nftSvgString)}`;
   const [selectedImage, setSelectedImage] = useState<any>(null);
@@ -190,6 +193,7 @@ const CreateStreamer = () => {
   };
 
   const createStreamer = async () => {
+    context.setLoading(true)
     console.log(selectedCategories)
     const profilePictureCid = await profilePictureUpload();
     console.log(profilePictureCid)
@@ -210,12 +214,14 @@ const CreateStreamer = () => {
     );
     await createStreamer.wait()
     await getContractInfo()
+    context.setLoading(false)
     router.push("/dashboard")
   };
 
   return (
     <div className="bg flex flex-col justify-start items-center">
       <Navbar isSticky={false}></Navbar>
+      <LoadingModal isOpen={context.loading}></LoadingModal>
       <div className="h-[24rem] w-[24rem] mt-8">
         <Image alt="NFT" src={nftString} width="448" height="448" />
       </div>
