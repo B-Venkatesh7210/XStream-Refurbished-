@@ -4,14 +4,21 @@ import Image from "next/image";
 import { useSignerContext } from "@/contexts/signerContext";
 import Thumbnail from "../../assets/images/thumbnail.jpg";
 import IShowSpeed from "../../assets/images/IShowSpeed.jpg";
+import { useCurrUserOrStreamerContext } from "@/contexts/currUserOrStreamerContext";
+import { useLobby, useRoom } from "@huddle01/react/hooks";
+import { useEventListener } from "@huddle01/react";
+import Router from "next/router";
 
 interface StreamComponentProps {
   livestream?: IStreamData | undefined;
 }
 
 const StreamComponent: React.FC<StreamComponentProps> = ({ livestream }) => {
+  const { joinLobby, leaveLobby, isLoading, isLobbyJoined, error } = useLobby();
+  const { joinRoom, leaveRoom, isRoomJoined } = useRoom();
   const [streamerData, setStreamerData] = useState<IStreamerData>();
   const { contract } = useSignerContext();
+  const { getCurrStreamerData } = useCurrUserOrStreamerContext();
 
   const getStreamerData = async () => {
     const streamerData = await contract.addToStreamer(livestream?.streamer);
@@ -24,24 +31,30 @@ const StreamComponent: React.FC<StreamComponentProps> = ({ livestream }) => {
     }
   }, [contract]);
 
+  useEventListener("lobby:joined", () => {
+    joinRoom();
+    Router.push({
+      pathname: "/room",
+      query: {
+        roomId: livestream?.roomId,
+        streamId: livestream?.streamId.toNumber(),
+      },
+    });
+  });
+
   return (
     <div
       className="h-[16rem] w-[21rem] glass-container flex flex-col justify-start items-center text-white hover:bg-secondaryRed/25 cursor-pointer"
-      onClick={() => {
-        // Handle click for the uppermost div here
-        console.log(livestream?.categories);
+      onClick={async () => {
+        joinLobby(livestream?.roomId as string);
       }}
     >
       <div className="relative h-[10rem] w-full">
-        <Image
+        <img
           alt="Stream Thumbnail"
           src={`https://ipfs.io/ipfs/${livestream?.thumbnail}`}
-          style={{
-            objectFit: "cover",
-            width: "100%",
-            height: "100%",
-          }}
-        ></Image>
+          style={{ height: "100%", width: "100%", objectFit: "cover" }}
+        ></img>
         <div className="w-[3rem] py-[2px] absolute top-4 left-4 bg-primaryRed rounded-md flex flex-row justify-center items-center text-white font-rubik font-medium text-[0.8rem]">
           LIVE
         </div>
@@ -52,18 +65,22 @@ const StreamComponent: React.FC<StreamComponentProps> = ({ livestream }) => {
         )}
       </div>
       <div className="w-full h-full flex flex-row justify-start items-start mt-2 px-4">
-        <div className="w-[40%] h-full">
+        <div className="w-[20%] h-full">
           <div
             className="rounded-[50%] w-[2rem] h-[2rem] overflow-hidden bg-white/70"
-            onClick={(e) => {
+            onClick={async (e) => {
               e.stopPropagation();
               // Handle click for the image here
-              console.log("Image clicked");
+
+              await getCurrStreamerData(streamerData?.streamerAdd as string);
+              Router.push({
+                pathname: "/dashboard",
+                query: { streamer: streamerData?.name },
+              });
             }}
           >
             <Image
               alt="Profile Picture"
-              //TODO add streamerData.profilePicture condition
               //@ts-ignore
               src={`https://ipfs.io/ipfs/${streamerData?.profilePicture}`}
               objectFit="cover"
@@ -87,15 +104,14 @@ const StreamComponent: React.FC<StreamComponentProps> = ({ livestream }) => {
             {livestream?.streamerName}
           </span>
           <div className="flex flex-row justify-start items-center gap-2">
-            <span className="w-auto px-[8px] py-[2px] rounded-lg bg-secondaryGrey text-white text-[0.6rem] font-rubik font-normal">
-              Entertainment
-            </span>
-            <span className="w-auto px-[8px] py-[2px] rounded-lg bg-secondaryGrey text-white text-[0.6rem] font-rubik font-normal">
-              Gaming
-            </span>
-            <span className="w-auto px-[8px] py-[2px] rounded-lg bg-secondaryGrey text-white text-[0.6rem] font-rubik font-normal">
-              Reaction
-            </span>
+            {livestream?.categories.map((category, index) => (
+              <span
+                key={index}
+                className="w-auto px-[8px] py-[2px] rounded-lg bg-secondaryGrey text-white text-[0.6rem] font-rubik font-normal"
+              >
+                {category}
+              </span>
+            ))}
           </div>
         </div>
       </div>

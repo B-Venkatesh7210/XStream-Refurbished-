@@ -101,7 +101,6 @@ const Dashboard = () => {
             </div>
           )}
           {isStreamer && (
-            //TODO change height to h-auto
             <div className="h-auto min-h-[80vh] mt-8 w-[90%] bg-secondaryGrey bg-opacity-20 rounded-2xl flex flex-col justify-start items-center">
               <StreamerProfile isRouterQuery={isRouterQuery}></StreamerProfile>
             </div>

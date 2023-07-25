@@ -6,6 +6,7 @@ import PrimaryButton from "@/components/PrimaryButton";
 import ProfilePicture from "../../assets/images/profilePicture.jpg";
 import { NFTStorage, File, Blob } from "nft.storage";
 import { useRouter } from "next/router";
+import HowToStart from "./HowToStart";
 
 interface FormDataProps {
   name: string | undefined;
@@ -277,7 +278,7 @@ const EditProfile: React.FC<EditProfileProps> = ({
           ></PrimaryButton>
         </div>
       </div>
-      <div className="w-[40%] h-full bg-blue-500 ml-10"></div>
+      <HowToStart></HowToStart>
     </div>
   );
 };

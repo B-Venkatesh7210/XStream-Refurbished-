@@ -8,6 +8,8 @@ import Image from "next/image";
 import { useSignerContext } from "../contexts/signerContext";
 import ProfilePicture from "../../assets/images/profilePicture.jpg";
 
+import HowToStart from "./HowToStart";
+
 interface UserProfileProps {
   setEnterEdit?: any;
   isRouterQuery?: boolean;
@@ -76,7 +78,7 @@ const UserProfile: React.FC<UserProfileProps> = ({
           ></PrimaryButton>
         </div>
       </div>
-      <div className="w-[40%] h-full bg-blue-500 ml-10"></div>
+      <HowToStart></HowToStart>
     </div>
   );
 };

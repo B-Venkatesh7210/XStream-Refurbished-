@@ -2,8 +2,14 @@ import React from "react";
 import Image from "next/image";
 import Thumbnail from "../../assets/images/thumbnail.jpg";
 import IShowSpeed from "../../assets/images/IShowSpeed.jpg";
+import { ICollectionData } from "@/utils/types";
 
-const VideoComponent = () => {
+
+interface VideoComponentProps {
+  collection: ICollectionData;
+}
+
+const VideoComponent: React.FC<VideoComponentProps> = ({ collection }) => {
   return (
     <div
       className="h-[16rem] w-[21rem] glass-container flex flex-col justify-start items-center text-white hover:bg-secondaryRed/25 cursor-pointer"
@@ -15,7 +21,7 @@ const VideoComponent = () => {
       <div className="relative h-[10rem] w-full">
         <Image
           alt="Stream Thumbnail"
-          src={Thumbnail}
+          src={collection.thumbnail}
           style={{
             objectFit: "cover",
             width: "100%",
@@ -27,7 +33,7 @@ const VideoComponent = () => {
         </div>
       </div>
       <div className="w-full h-full flex flex-row justify-start items-start mt-2 px-4">
-        <div className="w-[40%] h-full">
+        <div className="w-[20%] h-full">
           <div
             className="rounded-[50%] w-[2rem] h-[2rem] overflow-hidden bg-white/70"
             onClick={(e) => {
@@ -38,7 +44,6 @@ const VideoComponent = () => {
           >
             <Image
               alt="Profile Picture"
-              //TODO add streamerData.profilePicture condition
               //@ts-ignore
               src={IShowSpeed}
               objectFit="cover"
@@ -56,21 +61,20 @@ const VideoComponent = () => {
               maxWidth: "calc(100% - 3rem)", // Subtract the width of the image and some margin from the available width
             }}
           >
-            This is the title
+            {collection.title}
           </span>
           <span className="w-full text-white font-rubik font-normal text-[0.8rem]">
-            Streamer Name
+            {collection.streamerName}
           </span>
           <div className="flex flex-row justify-start items-center gap-2">
-            <span className="w-auto px-[8px] py-[2px] rounded-lg bg-secondaryGrey text-white text-[0.6rem] font-rubik font-normal">
-              Entertainment
-            </span>
-            <span className="w-auto px-[8px] py-[2px] rounded-lg bg-secondaryGrey text-white text-[0.6rem] font-rubik font-normal">
-              Gaming
-            </span>
-            <span className="w-auto px-[8px] py-[2px] rounded-lg bg-secondaryGrey text-white text-[0.6rem] font-rubik font-normal">
-              Reaction
-            </span>
+            {collection.categories.map((category, index) => (
+              <span
+                key={index}
+                className="w-auto px-[8px] py-[2px] rounded-lg bg-secondaryGrey text-white text-[0.6rem] font-rubik font-normal"
+              >
+                {category}
+              </span>
+            ))}
           </div>
         </div>
       </div>

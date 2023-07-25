@@ -53,3 +53,11 @@ export interface IChatData {
   amount: number;
   isSubscriber: boolean;
 }
+
+export interface ICollectionData {
+  streamId: number;
+  streamerName: string;
+  title: string;
+  thumbnail: any;
+  categories: string[];
+} 

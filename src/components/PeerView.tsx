@@ -173,7 +173,7 @@ const PeerView = () => {
             <span
               className="text-white font-rubik font-bold text-[1.5rem] ml-2 w-full max-h-[5rem] h-auto inline-block break-words content-fit"
               onClick={() => {
-                console.log(streamData?.streamId.toString());
+                console.log(peers);
               }}
             >
               {streamData?.title}

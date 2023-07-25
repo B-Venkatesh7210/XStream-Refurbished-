@@ -8,12 +8,35 @@ import { useStreamContext } from "@/contexts/streamContext";
 import { useAccount } from "wagmi";
 import { IStreamData } from "@/utils/types";
 import { useSignerContext } from "@/contexts/signerContext";
+import NotASubscriber from "@/components/NotASubscriber";
 
 const Room = () => {
   const router = useRouter();
   const { address } = useAccount();
-  const { isHost, streamId, setStreamId } = useStreamContext();
-  const { getContractInfo } = useSignerContext();
+  const {
+    isHost,
+    streamId,
+    setStreamId,
+    streamData,
+    streamerData,
+    setSubscribedStreamer,
+  } = useStreamContext();
+  const { nftContract } = useSignerContext();
+  const [subscribed, setSubscribed] = useState<boolean>(false);
+
+  const getSubscribedData = async () => {
+    const balance = await nftContract.balanceOf(
+      address,
+      streamerData?.streamerId
+    );
+    if (balance > 0) {
+      setSubscribed(true);
+      setSubscribedStreamer(true);
+    } else {
+      setSubscribed(false);
+      setSubscribedStreamer(false);
+    }
+  };
 
   useEffect(() => {
     const getData = async () => {
@@ -41,15 +64,31 @@ const Room = () => {
     // getData();
   }, [isHost, streamId]);
 
+  useEffect(() => {
+    if (streamerData) {
+      getSubscribedData();
+    }
+  }, [streamerData]);
+
   return (
     <div className="bg flex flex-col justify-start items-center scrollbar-hidden content">
       <Navbar isSticky={true}></Navbar>
-      <div className="w-full h-[15vh]"></div>
-      {/* //TODO make a choice for exclusive streams, that users can mint the NFT of the streamer and can watch the stream */}
-      <div className="w-[90%] h-[100vh] mt-6 flex flex-row justify-between items-start">
-        {isHost ? <HostView></HostView> : <PeerView></PeerView>}
-        <StreamChat></StreamChat>
-      </div>
+      <div className="w-full h-[10vh]"></div>
+      {streamData?.exclusive ? (
+        isHost || subscribed ? (
+          <div className="w-[90%] h-[100vh] mt-6 flex flex-row justify-between items-start">
+            {isHost ? <HostView></HostView> : <PeerView></PeerView>}
+            <StreamChat></StreamChat>
+          </div>
+        ) : (
+          <NotASubscriber streamerData={streamerData}></NotASubscriber>
+        )
+      ) : (
+        <div className="w-[90%] h-[100vh] mt-6 flex flex-row justify-between items-start">
+          {isHost ? <HostView></HostView> : <PeerView></PeerView>}
+          <StreamChat></StreamChat>
+        </div>
+      )}
     </div>
   );
 };

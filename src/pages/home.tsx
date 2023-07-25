@@ -5,7 +5,6 @@ import { useSigner } from "wagmi";
 import { useAccount } from "wagmi";
 import { useLobby, useRoom } from "@huddle01/react/hooks";
 import Router from "next/router";
-import { useEventListener } from "@huddle01/react";
 import { useCurrUserOrStreamerContext } from "@/contexts/currUserOrStreamerContext";
 import { useStreamContext } from "@/contexts/streamContext";
 import Image from "next/image";
@@ -14,6 +13,10 @@ import PlayCircleFilledWhiteIcon from "@mui/icons-material/PlayCircleFilledWhite
 import StreamComponent from "@/components/StreamComponent";
 import { BigNumber } from "ethers";
 import VideoComponent from "@/components/VideoComponent";
+import Youtube from "../../assets/logos/Youtube.png";
+import collections from "@/utils/collections";
+
+//TODO add loading everywhere
 
 const Home = () => {
   const { contract, nftContract, signer, getLivestreamsData, livestreams } =
@@ -21,21 +24,9 @@ const Home = () => {
   const { data: signer1 } = useSigner();
   const { isDisconnected } = useAccount();
   const { joinLobby, leaveLobby, isLoading, isLobbyJoined, error } = useLobby();
-  const { joinRoom, leaveRoom, isRoomJoined } = useRoom();
   const { getCurrStreamerData } = useCurrUserOrStreamerContext();
   const { streamData, streamerData, streamId, streamCategories } =
     useStreamContext();
-
-  useEventListener("lobby:joined", () => {
-    joinRoom();
-    Router.push({
-      pathname: "/room",
-      query: {
-        roomId: "lij-jtcx-bvm",
-        streamId: 7,
-      },
-    });
-  });
 
   const handleVideoClick = () => {
     //TODO add the link of the demo video
@@ -49,7 +40,7 @@ const Home = () => {
   }, [contract]);
 
   useEffect(() => {
-    const addChatReceivedListener = async () => {
+    const addStreamStartedListener = async () => {
       if (contract) {
         const eventEmitter1 = contract.on(
           "StreamStarted",
@@ -60,12 +51,28 @@ const Home = () => {
         );
 
         return () => {
-          eventEmitter1.removeAllListeners("ChatReceived");
+          eventEmitter1.removeAllListeners("StreamStarted");
         };
       }
     };
+    // const addStreamStoppedListener = async () => {
+    //   if (contract) {
+    //     const eventEmitter2 = contract.on(
+    //       "StreamStopped",
+    //       (streamId: BigNumber, streamer: string, streamerName: string) => {
+    //         console.log("A stream was stopped");
+    //         getLivestreamsData();
+    //       }
+    //     );
 
-    addChatReceivedListener();
+    //     return () => {
+    //       eventEmitter2.removeAllListeners("StreamStopped");
+    //     };
+    //   }
+    // };
+
+    // addStreamStoppedListener();
+    addStreamStartedListener();
   }, [contract]);
 
   //TODO add original contracts in the contracts folder
@@ -90,9 +97,9 @@ const Home = () => {
         )}
       </div> */}
       <div className="w-full h-[10vh]"></div>
-      <div className="flex flex-col justify-start items-center w-[95%] h-auto gap-8">
+      <div className="flex flex-col justify-start items-center w-[95%] h-auto gap-8 my-10">
         <div
-          className="relative w-full h-[35vh] mt-10 cursor-pointer hover:opacity-30 transition delay-100"
+          className="relative w-full h-[35vh] cursor-pointer hover:opacity-30 transition delay-100"
           onClick={handleVideoClick}
         >
           <Image
@@ -105,14 +112,17 @@ const Home = () => {
               objectPosition: "0% 35%",
             }}
           ></Image>
-          <div className="absolute top-[35%] left-[50%]">
-            <PlayCircleFilledWhiteIcon
-              style={{ fontSize: 100, color: "white" }}
-            ></PlayCircleFilledWhiteIcon>
+          <div className="h-[6rem] w-[6rem] absolute top-[35%] left-[48%]">
+            <Image alt="Youtube" src={Youtube}></Image>
           </div>
         </div>
         <div className="h-auto w-full flex flex-col justify-start items-start">
-          <div className="flex flex-row justify-start items-center gap-2">
+          <div
+            className="flex flex-row justify-start items-center gap-2"
+            onClick={() => {
+              getLivestreamsData();
+            }}
+          >
             <span className="text-white text-[2rem] font-rubik font-semibold">
               Ongoing
             </span>
@@ -124,11 +134,16 @@ const Home = () => {
             </span>
           </div>
           {livestreams?.length > 0 ? (
-            <div className="grid grid-cols-4 grid-rows-2 gap-8 mt-4">
+            <div className="grid grid-cols-4 grid-flow-row gap-8 mt-4">
               {/* <StreamComponent></StreamComponent>
             <StreamComponent></StreamComponent>
             <StreamComponent></StreamComponent>
             <StreamComponent></StreamComponent> */}
+              {livestreams.map((livestream, index) => (
+                <div key={index}>
+                  <StreamComponent livestream={livestream}></StreamComponent>
+                </div>
+              ))}
             </div>
           ) : (
             <div className="h-[8rem] w-full flex flex-row justify-start items-center text-white font-rubik font-semibold text-[1.2rem]">
@@ -145,15 +160,14 @@ const Home = () => {
               sessions
             </span>
           </div>
-          <div className="grid grid-cols-4 grid-rows-2 gap-8 mt-4">
-            <VideoComponent></VideoComponent>
-            <VideoComponent></VideoComponent>
-            <VideoComponent></VideoComponent>
-            <VideoComponent></VideoComponent>
+          <div className="grid grid-cols-4 grid-flow-row gap-8 mt-4">
+            {collections.map((collection, index) => (
+              <VideoComponent
+                key={index}
+                collection={collection}
+              ></VideoComponent>
+            ))}
           </div>
-          {/* <div className="h-[8rem] w-full flex flex-row justify-start items-center text-white font-rubik font-semibold text-[1.2rem]">
-              There are no live streams
-            </div> */}
         </div>
       </div>
     </div>

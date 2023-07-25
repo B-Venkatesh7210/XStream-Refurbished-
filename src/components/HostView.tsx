@@ -38,7 +38,7 @@ const HostView = () => {
     error: micError,
   } = useAudio();
   const router = useRouter();
-  const {contract} = useSignerContext();
+  const { contract } = useSignerContext();
   const { streamData, streamerData, streamId, streamCategories } =
     useStreamContext();
 
@@ -71,12 +71,19 @@ const HostView = () => {
     }
   }, [micStream]);
 
-  const stopStream = async() => {
+  const stopStream = async () => {
     const stopStream = await contract.stopStream(streamData?.streamId);
     await stopStream.wait();
+    stopVideoStream();
+    stopProducingVideo();
+    setCamera(false);
+    if (mic) {
+      stopProducingAudio();
+      setMic(false);
+    }
     router.push("/home");
     //TODO destroy camstream and micstream
-  }
+  };
 
   return (
     <div className="w-[50%] h-auto flex flex-col justify-start items-start gap-2 mb-4">

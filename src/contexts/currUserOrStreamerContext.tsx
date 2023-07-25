@@ -86,7 +86,6 @@ export const CurrentUserOrStreamerContextProvider = ({ children }: any) => {
   };
 
   const getStreamerCategories = async (address: string | undefined) => {
-    //TODO make this getStreamerCategories after final deployment
     const streamerCategories: string[] = await contract.getStreamerCategories(
       address
     );

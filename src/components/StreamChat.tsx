@@ -6,6 +6,7 @@ import { useAccount } from "wagmi";
 import { BigNumber } from "ethers";
 import { useSignerContext } from "@/contexts/signerContext";
 import { useStreamContext } from "@/contexts/streamContext";
+import ChatMessage from "./ChatMessage";
 
 interface ChatProps {
   message: string;
@@ -191,56 +192,10 @@ const StreamChat = () => {
       </div>
       <div className="w-[90%] bg-secondaryGrey h-[2px] mt-2"></div>
       <div className="w-full h-[70%] p-2 flex flex-col justify-start items-start">
-        <div className="w-full flex flex-col justify-start items-center gap-2 overflow-scroll">
+        <div className="w-full h-full flex flex-col justify-start items-center gap-2 overflow-scroll">
           {allChats?.map((chat, index) =>
-            chat.isSubscriber || chat.sender == streamData?.streamer ? (
-              <span
-                key={index}
-                className="w-full h-auto flex flex-row justify-start items-baseline bg-secondaryRed/20 border-primaryRed border-[1px] border-solid py-2 px-3 rounded-xl"
-              >
-                <span className="text-blue-800 drop-shadow-[0_1.2px_1.2px_rgba(0,0,0,0.8)] font-rubik font-bold text-[1.4rem] flex-col justify-start items-start">
-                  <span>{chat.name}</span>
-                  {parseFloat(chat.amount.toString()) / 10 ** 18 > 0 && (
-                    <span className="flex flex-row justify-center items-center mt-1">
-                      <span className="text-white text-[1.4rem] font-rubik font-bold">
-                        {parseFloat(chat.amount.toString()) / 10 ** 18}
-                      </span>
-                      <div className="h-[1.2rem] w-[1.2rem] ml-2">
-                        <Image alt="Polygon Logo" src={PolygonLogo}></Image>
-                      </div>
-                    </span>
-                  )}
-                </span>
-                <span className="text-white font-rubik font-normal text-[1.1rem] mx-4">
-                  {chat.message}
-                </span>
-              </span>
-            ) : (
-              <span
-                key={index}
-                className="w-full h-auto flex flex-row justify-start items-baseline px-2"
-              >
-                <span className="text-blue-800 drop-shadow-[0_1.2px_1.2px_rgba(0,0,0,0.8)] font-rubik font-semibold text-[1.2rem] flex-col justify-start items-start">
-                  <span>{chat.name}</span>
-                  {parseFloat(chat.amount.toString()) / 10 ** 18 > 0 && (
-                    <span className="flex flex-row justify-center items-center mt-1">
-                      <span className="text-white text-[1.4rem] font-rubik font-bold">
-                        {parseFloat(chat.amount.toString()) / 10 ** 18}
-                      </span>
-                      <div className="h-[1.2rem] w-[1.2rem] ml-2">
-                        <Image alt="Polygon Logo" src={PolygonLogo}></Image>
-                      </div>
-                    </span>
-                  )}
-                </span>
-                <span className="text-white font-rubik font-light text-base mx-4">
-                  {chat.message}
-                </span>
-              </span>
-            )
+            <ChatMessage key={index} chat={chat} streamData={streamData}></ChatMessage>
           )}
-
-          {/* //TODO randomise color of name */}
         </div>
       </div>
       <div className="w-[90%] bg-secondaryGrey h-[2px] mt-2"></div>

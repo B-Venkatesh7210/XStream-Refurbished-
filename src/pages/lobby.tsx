@@ -165,8 +165,6 @@ const Lobby = () => {
     Router.push({
       pathname: "/room",
       query: { roomId: context.roomId, streamId: streamId },
-      //TODO
-      //Change stream Id
     });
   };
 

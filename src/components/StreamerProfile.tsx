@@ -19,6 +19,7 @@ const StreamerProfile: React.FC<IStreamerProfileProps> = ({
   isRouterQuery,
 }) => {
   const {
+    signer,
     streamerData,
     streamerBalance,
     getContractInfo,
@@ -52,7 +53,6 @@ const StreamerProfile: React.FC<IStreamerProfileProps> = ({
   };
 
   const getCategories = async (address: string | undefined) => {
-    //TODO make this getStreamerCategories after final deployment
     const categories: string[] = await contract.getStreamerCategories(address);
     setCategories(categories);
   };
@@ -114,7 +114,7 @@ const StreamerProfile: React.FC<IStreamerProfileProps> = ({
 
   const subscribeStreamer = async () => {
     const subscribeStreamer = await contract.mintNft(
-      currStreamerData?.streamerId
+      currStreamerData?.streamerAdd
     );
     await subscribeStreamer.wait();
     setSubscribed(true);
